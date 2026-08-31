@@ -28,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({ onExportClick, activeView, onSea
       case 'geographic': return 'Geographic & Regional Analytics';
       case 'demographics': return 'Demographic & Cohort Intelligence';
       case 'books': return 'Registry Volumes & Page Explorer';
-      case 'relationships': return 'Statistical Relationship & Correlation Lab';
+      case 'relationships': return 'Family Tree & Lineage Intelligence Lab';
       case 'quality': return 'Data Quality & Integrity Center';
       case 'dictionary': return 'Data Dictionary & Schema Specification';
       case 'reports': return 'Ingestion Audit & Technical Report';

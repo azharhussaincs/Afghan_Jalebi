@@ -131,6 +131,8 @@ export interface FilterOptions {
   genders: { value: number; label: string }[];
   year_min: number;
   year_max: number;
+  provinces_with_counts?: { province: string; count: number }[];
+  districts_with_counts?: { district: string; count: number; province?: string }[];
 }
 
 export interface IngestionReport {

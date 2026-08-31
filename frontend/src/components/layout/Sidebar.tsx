@@ -24,7 +24,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) =
     { id: 'geographic', label: 'Geographic Insights', icon: MapPin, category: 'Analytics' },
     { id: 'demographics', label: 'Demographics & Cohorts', icon: Users, category: 'Analytics' },
     { id: 'books', label: 'Books & Page Explorer', icon: BookOpen, category: 'Analytics' },
-    { id: 'relationships', label: 'Relationship Lab', icon: GitFork, category: 'Advanced' },
+    { id: 'relationships', label: 'Family Tree & Lineage', icon: GitFork, category: 'Analytics' },
     { id: 'explorer', label: 'Data Explorer', icon: Table, category: 'Data Operations' },
     { id: 'search', label: 'Universal Search Hub', icon: Search, category: 'Data Operations' },
     { id: 'quality', label: 'Data Quality Center', icon: CheckCircle2, category: 'Quality & Docs' },

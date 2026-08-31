@@ -46,18 +46,18 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [refreshKey, setRefreshKey] = useState<number>(0);
 
   useEffect(() => {
-    api.getFilterOptions().then(opts => {
+    api.getFilterOptions(filters.province).then(opts => {
       if (opts && opts.provinces) {
         setFilterOptions(opts);
       }
     }).catch(err => console.error('Failed to load filter options', err));
-  }, [refreshKey]);
+  }, [filters.province, refreshKey]);
 
   const setProvince = (province?: string) => {
     setFilters(prev => ({
       ...prev,
       province: province || undefined,
-      district: undefined // reset district when province changes
+      district: undefined // automatically reset district when province changes
     }));
   };
 

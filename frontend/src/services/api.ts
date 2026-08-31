@@ -58,8 +58,9 @@ export const api = {
     return res.json();
   },
 
-  async getFilterOptions(): Promise<FilterOptions> {
-    const res = await fetch(`${API_BASE}/filters/options`);
+  async getFilterOptions(province?: string): Promise<FilterOptions> {
+    const url = province ? `${API_BASE}/filters/options?province=${encodeURIComponent(province)}` : `${API_BASE}/filters/options`;
+    const res = await fetch(url);
     return res.json();
   },
 
