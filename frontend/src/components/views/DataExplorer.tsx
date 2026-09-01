@@ -10,11 +10,14 @@ import {
   SlidersHorizontal,
   ArrowUpDown,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  FileSpreadsheet,
+  FileText
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { RecordItem, PaginatedRecords } from '../../types';
 import { useFilters } from '../../context/FilterContext';
+import { ExportModal } from '../common/ExportModal';
 
 interface DataExplorerProps {
   onSelectRecord: (record: RecordItem) => void;
@@ -23,6 +26,7 @@ interface DataExplorerProps {
 export const DataExplorer: React.FC<DataExplorerProps> = ({ onSelectRecord }) => {
   const { toQueryParams, refreshKey } = useFilters();
   const [data, setData] = useState<PaginatedRecords | null>(null);
+  const [showExportModal, setShowExportModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
@@ -58,7 +62,7 @@ export const DataExplorer: React.FC<DataExplorerProps> = ({ onSelectRecord }) =>
     { key: 'fname', label: "Father's Name (ولد)", rtl: true },
     { key: 'gname', label: "Grandfather (نام پدرکلان)", rtl: true },
     { key: 'dob_year', label: 'DoB Year (SH)', numeric: true },
-    { key: 'gender', label: 'Gender Code' },
+    { key: 'gender', label: 'Gender (جنسیت)' },
     { key: 'province', label: 'Province (ولایت)', rtl: true },
     { key: 'district', label: 'District (ولسوالی)', rtl: true },
     { key: 'province_code', label: 'Prov Code' },
@@ -101,12 +105,12 @@ export const DataExplorer: React.FC<DataExplorerProps> = ({ onSelectRecord }) =>
     setPage(1);
   };
 
-  const toggleCol = (key: string) => {
+  const toggleColumn = (key: string) => {
     setColVisibility(prev => ({ ...prev, [key]: !(prev as any)[key] }));
   };
 
-  const handleExport = (format: 'csv' | 'json') => {
-    const url = api.getExportUrl(format, toQueryParams());
+  const handleExport = (format: 'csv' | 'xlsx' | 'pdf' | 'json') => {
+    const url = api.getExportUrl(format, toQueryParams(), 1000);
     window.open(url, '_blank');
   };
 
@@ -119,40 +123,40 @@ export const DataExplorer: React.FC<DataExplorerProps> = ({ onSelectRecord }) =>
             <TableIcon className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-100">
-              Dataset Records Explorer ({data?.total_records.toLocaleString() || '...'} matching entries)
-            </h2>
-            <p className="text-xs text-slate-400">Server-side indexed pagination with dynamic sorting & filtering</p>
+            <h2 className="text-base font-bold text-slate-100">Enterprise Data Explorer</h2>
+            <p className="text-xs text-slate-400">
+              Paginated database browsing with dynamic sort, filter reactivity, and column controls
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-3">
-          {/* Column Settings Toggle */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Columns Visibility Dropdown */}
           <div className="relative">
             <button
               onClick={() => setShowColSettings(!showColSettings)}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-colors"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-xs font-medium text-slate-200 transition-colors"
             >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              <span>Columns</span>
+              <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
+              <span>Visible Columns</span>
             </button>
 
             {showColSettings && (
-              <div className="absolute right-0 mt-2 w-56 p-3 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl z-30 space-y-2">
-                <div className="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">
-                  Toggle Columns
+              <div className="absolute right-0 mt-2 w-56 p-2 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl z-30 space-y-1">
+                <div className="text-[11px] font-semibold text-slate-400 px-2 py-1 border-b border-slate-800">
+                  TOGGLE COLUMNS
                 </div>
-                <div className="max-h-60 overflow-y-auto space-y-1.5">
+                <div className="max-h-60 overflow-y-auto custom-scrollbar p-1">
                   {columns.map((c) => (
                     <label
                       key={c.key}
-                      className="flex items-center space-x-2 text-xs text-slate-300 hover:text-white cursor-pointer"
+                      className="flex items-center space-x-2 px-2 py-1 rounded hover:bg-slate-800/60 cursor-pointer text-xs text-slate-300"
                     >
                       <input
                         type="checkbox"
                         checked={(colVisibility as any)[c.key]}
-                        onChange={() => toggleCol(c.key)}
-                        className="rounded bg-slate-800 border-slate-700 text-brand-500 focus:ring-0"
+                        onChange={() => toggleColumn(c.key)}
+                        className="rounded border-slate-700 text-brand-500 focus:ring-brand-500/20 bg-slate-950"
                       />
                       <span>{c.label}</span>
                     </label>
@@ -162,23 +166,38 @@ export const DataExplorer: React.FC<DataExplorerProps> = ({ onSelectRecord }) =>
             )}
           </div>
 
-          {/* Quick Exports */}
-          <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
+          {/* Quick Exports & Modal Opener */}
+          <div className="flex items-center space-x-1.5 bg-slate-950 p-1 rounded-lg border border-slate-800">
+            <button
+              onClick={() => handleExport('xlsx')}
+              className="flex items-center space-x-1 px-2.5 py-1 rounded text-xs font-medium text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/40 transition-colors cursor-pointer"
+              title="Quick export to Excel (.xlsx)"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>Excel</span>
+            </button>
+            <button
+              onClick={() => handleExport('pdf')}
+              className="flex items-center space-x-1 px-2.5 py-1 rounded text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 transition-colors cursor-pointer"
+              title="Quick export to PDF (.pdf)"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>PDF</span>
+            </button>
             <button
               onClick={() => handleExport('csv')}
-              className="flex items-center space-x-1 px-2.5 py-1 rounded text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-              title="Export filtered records to CSV (UTF-8 BOM)"
+              className="flex items-center space-x-1 px-2.5 py-1 rounded text-xs font-medium text-sky-400 hover:text-sky-300 hover:bg-sky-950/40 transition-colors cursor-pointer"
+              title="Quick export to CSV (UTF-8 BOM)"
             >
-              <Download className="w-3 h-3" />
+              <Download className="w-3.5 h-3.5" />
               <span>CSV</span>
             </button>
             <button
-              onClick={() => handleExport('json')}
-              className="flex items-center space-x-1 px-2.5 py-1 rounded text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-              title="Export filtered records to JSON"
+              onClick={() => setShowExportModal(true)}
+              className="flex items-center space-x-1 px-2.5 py-1 rounded text-xs font-medium text-brand-400 hover:text-brand-300 hover:bg-brand-950/50 transition-colors cursor-pointer border-l border-slate-800 pl-2"
+              title="Open full export center with custom limits and columns"
             >
-              <Download className="w-3 h-3" />
-              <span>JSON</span>
+              <span>More...</span>
             </button>
           </div>
         </div>
@@ -274,8 +293,14 @@ export const DataExplorer: React.FC<DataExplorerProps> = ({ onSelectRecord }) =>
                     )}
                     {colVisibility.gender && (
                       <td className="py-2.5 px-3 whitespace-nowrap">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300">
-                          {rec.gender === 0 ? 'Code 0' : rec.gender === 1 ? 'Code 1' : 'null'}
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${
+                          rec.gender === 0
+                            ? 'bg-sky-950/70 border border-sky-500/30 text-sky-300'
+                            : rec.gender === 1
+                            ? 'bg-pink-950/70 border border-pink-500/30 text-pink-300'
+                            : 'bg-slate-800 text-slate-400'
+                        }`}>
+                          {rec.gender === 0 ? 'Male (مرد)' : rec.gender === 1 ? 'Female (زن)' : '—'}
                         </span>
                       </td>
                     )}
@@ -422,6 +447,12 @@ export const DataExplorer: React.FC<DataExplorerProps> = ({ onSelectRecord }) =>
           </div>
         )}
       </div>
+
+      {/* Universal Export Modal */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+      />
     </div>
   );
 };

@@ -195,7 +195,7 @@ export const DataDictionary: React.FC = () => {
           <span>Semantic Policy & Truth-In-Data Standards</span>
         </div>
         <p className="leading-relaxed">
-          1. <strong>Gender Codes:</strong> Values are stored as <code className="bg-slate-800 px-1 py-0.5 rounded text-brand-300">0</code> and <code className="bg-slate-800 px-1 py-0.5 rounded text-brand-300">1</code>. Semantic labeling in the UI is explicitly displayed as Gender Code 0 and Gender Code 1 with explicit notes that domain confirmation is required.
+          1. <strong>Gender Codes:</strong> Stored as binary values <code className="bg-slate-800 px-1 py-0.5 rounded text-brand-300">0</code> (Male / مرد) and <code className="bg-slate-800 px-1 py-0.5 rounded text-brand-300">1</code> (Female / زن).
         </p>
         <p className="leading-relaxed">
           2. <strong>Temporal System:</strong> <code className="bg-slate-800 px-1 py-0.5 rounded text-brand-300">DoBYear</code> records birth years in the Solar Hijri (هجری شمسی) calendar.

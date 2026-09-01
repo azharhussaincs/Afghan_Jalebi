@@ -16,12 +16,15 @@ if ENV_PATH.exists():
 def resolve_data_file() -> Path:
     env_data = os.getenv("DATA_FILE")
     if env_data:
-        p = Path(env_data)
-        if p.exists():
-            return p
-        p_rel = BASE_DIR / env_data
-        if p_rel.exists():
-            return p_rel
+        try:
+            p = Path(env_data)
+            if p.exists():
+                return p
+            p_rel = BASE_DIR / env_data
+            if p_rel.exists():
+                return p_rel
+        except Exception:
+            pass
     
     candidates = [
         BASE_DIR / "data" / "two.txt",
@@ -30,23 +33,36 @@ def resolve_data_file() -> Path:
         Path("/media/albaloshi/USB_SHARED/two.txt")
     ]
     for c in candidates:
-        if c.exists():
-            return c
+        try:
+            if c.exists():
+                return c
+        except Exception:
+            pass
     return BASE_DIR / "data" / "two.txt"
 
 def resolve_db_file() -> Path:
+    default_db = BASE_DIR / "database" / "data.db"
     env_db = os.getenv("DATABASE_FILE")
     if env_db:
-        p = Path(env_db)
-        if p.is_absolute():
+        try:
+            p = Path(env_db)
+            if not p.is_absolute():
+                p = BASE_DIR / env_db
+            if p.exists():
+                return p
+            # If default_db exists and env path doesn't, prefer default_db
+            if default_db.exists():
+                return default_db
             p.parent.mkdir(parents=True, exist_ok=True)
             return p
-        target = BASE_DIR / env_db
-        target.parent.mkdir(parents=True, exist_ok=True)
-        return target
+        except Exception:
+            if default_db.exists():
+                return default_db
     
-    default_db = BASE_DIR / "database" / "data.db"
-    default_db.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        default_db.parent.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
     return default_db
 
 DATA_FILE_PATH = resolve_data_file()

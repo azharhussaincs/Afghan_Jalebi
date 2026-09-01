@@ -15,11 +15,13 @@ import { DataQualityCenter } from './components/views/DataQualityCenter';
 import { DataDictionary } from './components/views/DataDictionary';
 import { ReportGenerator } from './components/views/ReportGenerator';
 import { RecordItem } from './types';
+import { ExportModal } from './components/common/ExportModal';
 
 export const App: React.FC = () => {
   const [activeView, setActiveView] = useState<string>('overview');
   const [selectedRecord, setSelectedRecord] = useState<RecordItem | null>(null);
   const [familyRecordId, setFamilyRecordId] = useState<number | null>(null);
+  const [showExportModal, setShowExportModal] = useState<boolean>(false);
 
   const handleViewFamilyTree = (recordId: number) => {
     setFamilyRecordId(recordId);
@@ -63,10 +65,10 @@ export const App: React.FC = () => {
         <div className="flex-1 flex flex-col min-w-0">
           <Header
             activeView={activeView}
-            onExportClick={() => setActiveView('reports')}
+            onExportClick={() => setShowExportModal(true)}
             onSearchSubmit={() => setActiveView('search')}
           />
-          <GlobalFilterBar />
+          <GlobalFilterBar onExportClick={() => setShowExportModal(true)} />
 
           <main className="flex-1 overflow-y-auto">
             {renderActiveView()}
@@ -78,6 +80,12 @@ export const App: React.FC = () => {
           record={selectedRecord}
           onClose={() => setSelectedRecord(null)}
           onViewFamilyTree={handleViewFamilyTree}
+        />
+
+        {/* Universal Enterprise Export Modal */}
+        <ExportModal
+          isOpen={showExportModal}
+          onClose={() => setShowExportModal(false)}
         />
       </div>
     </FilterProvider>

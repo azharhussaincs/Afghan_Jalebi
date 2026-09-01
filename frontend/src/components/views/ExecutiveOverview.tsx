@@ -7,21 +7,19 @@ import {
   Calendar,
   CheckCircle2,
   TrendingUp,
-  Info,
   ArrowUpRight,
   ShieldAlert,
-  Sparkles,
   HelpCircle
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useFilters } from '../../context/FilterContext';
-import { OverviewKPIs, SmartInsight, GeographicAnalyticsData, DemographicAnalyticsData } from '../../types';
+import { OverviewKPIs, GeographicAnalyticsData, DemographicAnalyticsData } from '../../types';
 import { ExplainModal } from '../common/ExplainModal';
+import { getEnglishProvinceName } from '../../utils/geoTranslation';
 
 export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
-  const { toQueryParams, refreshKey } = useFilters();
+  const { toQueryParams, refreshKey, filters, activeFilterCount, clearFilters } = useFilters();
   const [kpis, setKpis] = useState<OverviewKPIs | null>(null);
-  const [insights, setInsights] = useState<SmartInsight[]>([]);
   const [geoData, setGeoData] = useState<GeographicAnalyticsData | null>(null);
   const [demoData, setDemoData] = useState<DemographicAnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,19 +28,14 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
   useEffect(() => {
     setLoading(true);
     const params = toQueryParams();
-    // Macro overview charts aggregate across geographic/demographic filters
-    const macroParams = { ...params };
-    delete macroParams.q;
 
     Promise.all([
-      api.getOverviewKPIs(macroParams),
-      api.getSmartInsights(),
-      api.getGeographicAnalytics(macroParams),
-      api.getDemographicAnalytics(macroParams)
+      api.getOverviewKPIs(params),
+      api.getGeographicAnalytics(params),
+      api.getDemographicAnalytics(params)
     ])
-      .then(([kpiRes, insRes, geoRes, demoRes]) => {
+      .then(([kpiRes, geoRes, demoRes]) => {
         setKpis(kpiRes);
-        setInsights(insRes);
         setGeoData(geoRes);
         setDemoData(demoRes);
       })
@@ -65,17 +58,17 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
     legend: { bottom: '5%', left: 'center', textStyle: { color: '#94a3b8', fontSize: 11 } },
     series: [
       {
-        name: 'Gender Code Distribution',
+        name: 'Gender Distribution',
         type: 'pie',
         radius: ['45%', '70%'],
         avoidLabelOverlap: false,
         itemStyle: { borderRadius: 6, borderColor: '#020617', borderWidth: 2 },
         label: { show: false },
         emphasis: { label: { show: true, fontSize: 12, fontWeight: 'bold', color: '#f8fafc' } },
-        data: kpis.gender_counts.map((g, idx) => ({
+        data: kpis.gender_counts.map((g) => ({
           value: g.count,
-          name: g.label,
-          itemStyle: { color: idx === 0 ? '#38bdf8' : idx === 1 ? '#ec4899' : '#a855f7' }
+          name: g.value === 0 ? 'Male (مرد)' : (g.value === 1 ? 'Female (زن)' : g.label),
+          itemStyle: { color: g.value === 0 ? '#38bdf8' : g.value === 1 ? '#ec4899' : '#a855f7' }
         }))
       }
     ]
@@ -84,13 +77,21 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
   // Province Chart Option
   const topProvinces = (geoData?.provinces || []).slice(0, 10);
   const provinceChartOption = {
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: (params: any) => {
+        const item = params[0];
+        if (!item) return '';
+        return `<strong>${item.name}</strong>: ${item.value.toLocaleString()} records`;
+      }
+    },
     grid: { left: '3%', right: '4%', bottom: '3%', top: '3%', containLabel: true },
     xAxis: { type: 'value', splitLine: { lineStyle: { color: '#1e293b' } }, axisLabel: { color: '#94a3b8', fontSize: 10 } },
     yAxis: {
       type: 'category',
-      data: topProvinces.map((p) => p.province).reverse(),
-      axisLabel: { color: '#e2e8f0', fontSize: 11, fontFamily: 'Vazirmatn' }
+      data: topProvinces.map((p) => `${getEnglishProvinceName(p.province)} (${p.province})`).reverse(),
+      axisLabel: { color: '#e2e8f0', fontSize: 11 }
     },
     series: [
       {
@@ -140,24 +141,31 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
 
   return (
     <div className="p-6 space-y-6">
-      {/* Top Banner Alert for Semantic Verification */}
-      <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 rounded-lg bg-brand-500/10 text-brand-400">
-            <Info className="w-4 h-4" />
+      {/* Active Cross-Filter Indicator Banner */}
+      {activeFilterCount > 0 && (
+        <div className="p-3.5 rounded-xl bg-brand-950/40 border border-brand-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center space-x-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-400 animate-pulse shrink-0"></span>
+            <div>
+              <div className="text-xs font-bold text-brand-200 flex items-center gap-2">
+                <span>Active Filter Scope Enabled</span>
+                <span className="px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 text-[10px] font-mono border border-brand-500/30">
+                  {kpis.total_records.toLocaleString()} Matching Records
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Executive KPIs, volume distributions, and demographic cohorts are actively synchronized with your cross-filters.
+              </p>
+            </div>
           </div>
-          <div className="text-xs text-slate-300">
-            <span className="font-semibold text-slate-100">Domain Semantic Standard:</span> Displaying dynamic statistics computed from the complete <strong>24,399,446</strong> row dataset. Gender codes (0/1) and Solar Hijri birth years are preserved exactly as recorded in official volumes.
-          </div>
+          <button
+            onClick={clearFilters}
+            className="px-3 py-1 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors shrink-0 self-start sm:self-auto font-medium"
+          >
+            Reset Filters
+          </button>
         </div>
-        <button
-          onClick={() => setExplainTopic('gender_semantics')}
-          className="text-xs text-brand-400 hover:text-brand-300 font-medium flex items-center gap-1 shrink-0 ml-4"
-        >
-          <span>Semantic Policy</span>
-          <HelpCircle className="w-3.5 h-3.5" />
-        </button>
-      </div>
+      )}
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -232,31 +240,6 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
         </div>
       </div>
 
-      {/* Smart Dynamic Insights */}
-      <div className="p-5 rounded-xl bg-slate-900/40 border border-slate-800">
-        <div className="flex items-center space-x-2 mb-4">
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-            Dynamically Generated Dataset Insights
-          </h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {insights.slice(0, 3).map((ins, idx) => (
-            <div
-              key={idx}
-              className="p-3.5 rounded-lg bg-slate-950/60 border border-slate-800/70 flex flex-col justify-between"
-            >
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-400">
-                  {ins.category}
-                </span>
-                <h4 className="text-xs font-bold text-slate-200 mt-1">{ins.title}</h4>
-                <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">{ins.text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* Visual Analytics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -284,8 +267,8 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
         <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-100">Gender Code Ratio</h3>
-              <p className="text-xs text-slate-400">Recorded identity classification breakdown</p>
+              <h3 className="text-sm font-bold text-slate-100">Gender Ratio (Male / Female)</h3>
+              <p className="text-xs text-slate-400">Demographic distribution across registry entries</p>
             </div>
             <button
               onClick={() => setExplainTopic('gender_semantics')}
@@ -308,10 +291,10 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
             <p className="text-xs text-slate-400">Temporal cohort frequency curve from official registry birth records</p>
           </div>
           <button
-            onClick={() => onNavigate('demographics')}
+            onClick={() => onNavigate('explorer')}
             className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1 font-medium"
           >
-            <span>Cohort Deep-Dive</span>
+            <span>Explore Records</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>

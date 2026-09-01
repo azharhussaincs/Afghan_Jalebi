@@ -4,7 +4,6 @@ import {
   Search,
   Table,
   MapPin,
-  Users,
   BookOpen,
   GitFork,
   CheckCircle2,
@@ -22,7 +21,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) =
   const navItems = [
     { id: 'overview', label: 'Executive Overview', icon: BarChart3, category: 'Analytics' },
     { id: 'geographic', label: 'Geographic Insights', icon: MapPin, category: 'Analytics' },
-    { id: 'demographics', label: 'Demographics & Cohorts', icon: Users, category: 'Analytics' },
     { id: 'books', label: 'Books & Page Explorer', icon: BookOpen, category: 'Analytics' },
     { id: 'relationships', label: 'Family Tree & Lineage', icon: GitFork, category: 'Analytics' },
     { id: 'explorer', label: 'Data Explorer', icon: Table, category: 'Data Operations' },

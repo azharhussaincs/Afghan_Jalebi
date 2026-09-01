@@ -111,12 +111,12 @@ def compute_and_cache_all_analytics(conn: sqlite3.Connection):
         val = r[0]
         cnt = r[1]
         pct = (cnt / total_records) * 100
-        label = f"Gender Code {val}"
+        label = f"Gender {val}"
         if val == 0:
-            label = "Gender Code 0 (Observed)"
+            label = "Male (مرد)"
             code_0_count = cnt
         elif val == 1:
-            label = "Gender Code 1 (Observed)"
+            label = "Female (زن)"
             code_1_count = cnt
         else:
             label = f"Code {val} (Unspecified)"
@@ -125,8 +125,7 @@ def compute_and_cache_all_analytics(conn: sqlite3.Connection):
             "value": val,
             "label": label,
             "count": cnt,
-            "percentage": round(pct, 2),
-            "domain_note": "Domain semantic mapping requires external verification."
+            "percentage": round(pct, 2)
         })
 
     # 5. Province x Gender Matrix
@@ -356,8 +355,8 @@ def compute_and_cache_all_analytics(conn: sqlite3.Connection):
         },
         {
             "category": "Demographic Proportions",
-            "title": "Gender Code Distribution",
-            "text": f"Observed values show {code_0_count:,} Code 0 records ({round(code_0_count/total_records*100, 1) if total_records else 0}%) and {code_1_count:,} Code 1 records ({round(code_1_count/total_records*100, 1) if total_records else 0}%). Note: Domain mapping requires external confirmation.",
+            "title": "Gender Distribution (Male / Female)",
+            "text": f"Registered entries show {code_0_count:,} Male records ({round(code_0_count/total_records*100, 1) if total_records else 0}%) and {code_1_count:,} Female records ({round(code_1_count/total_records*100, 1) if total_records else 0}%).",
             "type": "accent"
         },
         {

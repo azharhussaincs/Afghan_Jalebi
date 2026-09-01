@@ -16,15 +16,22 @@ echo "======================================================================"
 echo "  Starting Enterprise Civil Registry Data Platform"
 echo "======================================================================"
 
+# Activate virtual environment if present
+if [ -f "$BASE_DIR/.venv/bin/activate" ]; then
+    source "$BASE_DIR/.venv/bin/activate"
+fi
+
 # Determine uvicorn command
 UVICORN_CMD="python3 -m uvicorn"
-if command -v /home/albaloshi/.local/bin/uvicorn &> /dev/null; then
+if [ -x "$BASE_DIR/.venv/bin/uvicorn" ]; then
+    UVICORN_CMD="$BASE_DIR/.venv/bin/uvicorn"
+elif command -v /home/albaloshi/.local/bin/uvicorn &> /dev/null; then
     UVICORN_CMD="/home/albaloshi/.local/bin/uvicorn"
 fi
 
 # 1. Start Backend
-echo "[*] Starting FastAPI Backend on http://127.0.0.1:8001..."
-$UVICORN_CMD backend.main:app --host 127.0.0.1 --port 8001 > backend.log 2>&1 &
+echo "[*] Starting FastAPI Backend on http://0.0.0.0:8001..."
+$UVICORN_CMD backend.main:app --host 0.0.0.0 --port 8001 --reload > backend.log 2>&1 &
 BACKEND_PID=$!
 
 # 2. Start Frontend

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ReactECharts from 'echarts-for-react';
-import { BookOpen, FileText, Filter, ArrowUpRight } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { api } from '../../services/api';
 import { useFilters } from '../../context/FilterContext';
 import { BooksPagesData } from '../../types';
@@ -27,25 +26,6 @@ export const BookPageExplorer: React.FC = () => {
     );
   }
 
-  // Page Density Chart Option
-  const pageChartOption = {
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    grid: { left: '3%', right: '4%', bottom: '3%', top: '3%', containLabel: true },
-    xAxis: {
-      type: 'category',
-      data: data.pages_distribution.map((p) => `Page ${p.page_number}`),
-      axisLabel: { color: '#94a3b8', fontSize: 10 }
-    },
-    yAxis: { type: 'value', splitLine: { lineStyle: { color: '#1e293b' } }, axisLabel: { color: '#94a3b8' } },
-    series: [
-      {
-        type: 'bar',
-        data: data.pages_distribution.map((p) => p.records_count),
-        itemStyle: { color: '#6366f1', borderRadius: [4, 4, 0, 0] }
-      }
-    ]
-  };
-
   return (
     <div className="p-6 space-y-6">
       {/* Header Info */}
@@ -65,14 +45,6 @@ export const BookPageExplorer: React.FC = () => {
         </div>
       </div>
 
-      {/* Page Density Histogram */}
-      <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
-        <h3 className="text-sm font-bold text-slate-100 mb-1">Page Pagination Density Histogram</h3>
-        <p className="text-xs text-slate-400 mb-4">Record distribution across physical volume page numbers (Pages 1 - 100)</p>
-        <div className="h-72">
-          <ReactECharts option={pageChartOption} style={{ height: '100%', width: '100%' }} />
-        </div>
-      </div>
 
       {/* Top Books Table */}
       <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">

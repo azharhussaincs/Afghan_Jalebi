@@ -296,7 +296,7 @@ export const RelationshipLab: React.FC<RelationshipLabProps> = ({ initialRecordI
                       : 'bg-gradient-to-tr from-cyan-600 to-blue-500 text-white shadow-cyan-500/20'
                   }`}
                 >
-                  {p.name.charAt(0)}
+                  {(p.name || '?').charAt(0)}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -314,7 +314,7 @@ export const RelationshipLab: React.FC<RelationshipLabProps> = ({ initialRecordI
                     <span>•</span>
                     <span><strong>پدرکلان (Grandfather):</strong> {p.gname || 'نامشخص'}</span>
                     <span>•</span>
-                    <span><strong>جنسیت (Gender):</strong> {p.gender === 1 ? 'Female (Code 1)' : 'Male (Code 0)'}</span>
+                    <span><strong>جنسیت (Gender):</strong> {p.gender === 1 ? 'Female (زن)' : 'Male (مرد)'}</span>
                   </div>
                 </div>
               </div>

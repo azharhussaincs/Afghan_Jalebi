@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { Search, RotateCcw, Filter, Eye, ArrowRight, BookOpen, MapPin, Hash, User, Calendar } from 'lucide-react';
+import { Search, RotateCcw, Filter, Eye, ArrowRight, BookOpen, MapPin, Hash, User, Calendar, Download } from 'lucide-react';
 import { api } from '../../services/api';
 import { RecordItem } from '../../types';
 import { useFilters } from '../../context/FilterContext';
+import { ExportModal } from '../common/ExportModal';
 
 interface AdvancedSearchProps {
   onSelectRecord: (record: RecordItem) => void;
 }
 
 export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onSelectRecord }) => {
-  const { filterOptions, filters } = useFilters();
+  const { filterOptions, filters, setSearchQuery } = useFilters();
   const [q, setQ] = useState(filters.search_query || '');
   const [name, setName] = useState('');
   const [fname, setFname] = useState('');
@@ -28,6 +29,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onSelectRecord }
   const [totalMatches, setTotalMatches] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   React.useEffect(() => {
     if (filters.search_query) {
@@ -45,11 +47,19 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onSelectRecord }
         })
         .catch((err) => console.error('Search failed', err))
         .finally(() => setLoading(false));
+    } else {
+      setQ('');
+      setResults([]);
+      setTotalMatches(null);
+      setHasSearched(false);
     }
   }, [filters.search_query]);
 
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (q) {
+      setSearchQuery(q.trim());
+    }
     setLoading(true);
     setHasSearched(true);
     try {
@@ -81,6 +91,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onSelectRecord }
 
   const handleReset = () => {
     setQ('');
+    setSearchQuery(undefined);
     setName('');
     setFname('');
     setGname('');
@@ -211,13 +222,13 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onSelectRecord }
             </div>
 
             <div>
-              <label className="block text-[11px] font-medium text-slate-400 mb-1">Gender Code</label>
+              <label className="block text-[11px] font-medium text-slate-400 mb-1">Gender</label>
               <select
                 value={gender !== undefined ? gender : ''}
                 onChange={(e) => setGender(e.target.value !== '' ? Number(e.target.value) : undefined)}
                 className="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-800 rounded-md text-xs text-slate-200 focus:outline-none focus:border-brand-500"
               >
-                <option value="">All Codes</option>
+                <option value="">All Genders</option>
                 {filterOptions.genders.map((g) => (
                   <option key={g.value} value={g.value}>
                     {g.label}
@@ -268,11 +279,23 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onSelectRecord }
 
       {/* Results Header */}
       {hasSearched && (
-        <div className="flex items-center justify-between px-1">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-1">
           <div className="text-xs text-slate-400">
             Found <span className="font-bold text-slate-100 font-mono">{totalMatches?.toLocaleString()}</span> matching records
             {totalMatches && totalMatches > 50 ? ' (Displaying top 50 matches)' : ''}
           </div>
+
+          {results.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowExportModal(true)}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-sm shadow-brand-500/20 transition-all cursor-pointer"
+              title="Export search results in PDF, Excel, CSV, or JSON"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export Search Results</span>
+            </button>
+          )}
         </div>
       )}
 
@@ -315,8 +338,14 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onSelectRecord }
               </div>
 
               <div className="flex items-center space-x-2 shrink-0 ml-4">
-                <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-300">
-                  {rec.gender === 0 ? 'Code 0' : rec.gender === 1 ? 'Code 1' : 'Unspecified'}
+                <span className={`px-2 py-0.5 rounded text-[11px] font-medium ${
+                  rec.gender === 0
+                    ? 'bg-sky-950/70 border border-sky-500/30 text-sky-300'
+                    : rec.gender === 1
+                    ? 'bg-pink-950/70 border border-pink-500/30 text-pink-300'
+                    : 'bg-slate-800 text-slate-400'
+                }`}>
+                  {rec.gender === 0 ? 'Male (مرد)' : rec.gender === 1 ? 'Female (زن)' : 'Unspecified'}
                 </span>
                 <div className="p-1.5 rounded-lg bg-slate-800 group-hover:bg-brand-600 text-slate-400 group-hover:text-white transition-all">
                   <Eye className="w-4 h-4" />
@@ -334,6 +363,12 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onSelectRecord }
           <p className="text-xs text-slate-500 mt-1">Try broadening your search criteria or resetting filters</p>
         </div>
       )}
+
+      {/* Universal Export Modal */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+      />
     </div>
   );
 };

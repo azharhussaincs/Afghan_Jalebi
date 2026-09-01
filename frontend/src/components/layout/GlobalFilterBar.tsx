@@ -1,8 +1,17 @@
 import React from 'react';
-import { Filter, X, Calendar, MapPin, BookOpen, Users, RotateCcw, ChevronDown, Check } from 'lucide-react';
+import { Filter, X, Calendar, RotateCcw, Download } from 'lucide-react';
 import { useFilters } from '../../context/FilterContext';
+import {
+  getEnglishProvinceName,
+  getEnglishDistrictName,
+  getCleanNativeName
+} from '../../utils/geoTranslation';
 
-export const GlobalFilterBar: React.FC = () => {
+interface GlobalFilterBarProps {
+  onExportClick?: () => void;
+}
+
+export const GlobalFilterBar: React.FC<GlobalFilterBarProps> = ({ onExportClick }) => {
   const {
     filters,
     filterOptions,
@@ -11,6 +20,7 @@ export const GlobalFilterBar: React.FC = () => {
     setGender,
     setYearRange,
     setBookName,
+    setSearchQuery,
     clearFilters,
     activeFilterCount
   } = useFilters();
@@ -37,24 +47,30 @@ export const GlobalFilterBar: React.FC = () => {
               <select
                 value={filters.province || ''}
                 onChange={(e) => setProvince(e.target.value)}
-                className={`text-xs bg-slate-950 border rounded-md px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all font-medium ${
-                  filters.province ? 'border-brand-500/60 bg-brand-950/20 text-brand-300' : 'border-slate-800 hover:border-slate-700'
+                className={`text-xs bg-slate-950 border rounded-md px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all font-medium cursor-pointer ${
+                  filters.province ? 'border-brand-500/60 bg-brand-950/30 text-brand-300 ring-1 ring-brand-500/30' : 'border-slate-800 hover:border-slate-700'
                 }`}
               >
                 <option value="">
                   All Provinces ({filterOptions.provinces_with_counts?.length || filterOptions.provinces.length})
                 </option>
                 {filterOptions.provinces_with_counts && filterOptions.provinces_with_counts.length > 0
-                  ? filterOptions.provinces_with_counts.map((p) => (
-                      <option key={p.province} value={p.province}>
-                        {p.province} ({formatCount(p.count)})
-                      </option>
-                    ))
-                  : filterOptions.provinces.map((p) => (
-                      <option key={p} value={p}>
-                        {p}
-                      </option>
-                    ))}
+                  ? filterOptions.provinces_with_counts.map((p) => {
+                      const en = getEnglishProvinceName(p.province);
+                      return (
+                        <option key={p.province} value={p.province}>
+                          {en} • {p.province} ({formatCount(p.count)})
+                        </option>
+                      );
+                    })
+                  : filterOptions.provinces.map((p) => {
+                      const en = getEnglishProvinceName(p);
+                      return (
+                        <option key={p} value={p}>
+                          {en} • {p}
+                        </option>
+                      );
+                    })}
               </select>
             </div>
 
@@ -62,25 +78,43 @@ export const GlobalFilterBar: React.FC = () => {
             <div className="relative">
               <select
                 value={filters.district || ''}
-                onChange={(e) => setDistrict(e.target.value)}
-                className={`text-xs bg-slate-950 border rounded-md px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all font-medium ${
-                  filters.district ? 'border-brand-500/60 bg-brand-950/20 text-brand-300' : 'border-slate-800 hover:border-slate-700'
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (!val) {
+                    setDistrict(undefined);
+                  } else {
+                    if (!filters.province) {
+                      const match = filterOptions.districts_with_counts?.find(d => d.district === val);
+                      if (match && match.province) {
+                        setProvince(match.province);
+                      }
+                    }
+                    setDistrict(val);
+                  }
+                }}
+                className={`text-xs bg-slate-950 border rounded-md px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all font-medium cursor-pointer ${
+                  filters.district ? 'border-brand-500/60 bg-brand-950/30 text-brand-300 ring-1 ring-brand-500/30' : 'border-slate-800 hover:border-slate-700'
                 }`}
               >
                 <option value="">
                   {filters.province 
-                    ? `All Districts in ${filters.province} (${filterOptions.districts_with_counts?.length || filterOptions.districts.length})` 
+                    ? `All Districts in ${getEnglishProvinceName(filters.province)} (${filterOptions.districts_with_counts?.length || filterOptions.districts.length})` 
                     : `All Districts (${filterOptions.districts_with_counts?.length || filterOptions.districts.length})`}
                 </option>
                 {filterOptions.districts_with_counts && filterOptions.districts_with_counts.length > 0
-                  ? filterOptions.districts_with_counts.map((d) => (
-                      <option key={d.district} value={d.district}>
-                        {d.district} ({formatCount(d.count)})
-                      </option>
-                    ))
+                  ? filterOptions.districts_with_counts.map((d) => {
+                      const cleanNative = getCleanNativeName(d.district, filters.province || d.province);
+                      const en = getEnglishDistrictName(d.district, filters.province || d.province);
+                      const provNote = !filters.province && d.province ? ` [${getEnglishProvinceName(d.province)}]` : '';
+                      return (
+                        <option key={`${d.province || ''}-${d.district}`} value={d.district}>
+                          {en} • {cleanNative}{provNote} ({formatCount(d.count)})
+                        </option>
+                      );
+                    })
                   : filterOptions.districts.map((d) => (
                       <option key={d} value={d}>
-                        {d}
+                        {getEnglishDistrictName(d, filters.province)} • {d}
                       </option>
                     ))}
               </select>
@@ -91,16 +125,13 @@ export const GlobalFilterBar: React.FC = () => {
               <select
                 value={filters.gender !== undefined ? filters.gender : ''}
                 onChange={(e) => setGender(e.target.value !== '' ? Number(e.target.value) : undefined)}
-                className={`text-xs bg-slate-950 border rounded-md px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all font-medium ${
-                  filters.gender !== undefined ? 'border-brand-500/60 bg-brand-950/20 text-brand-300' : 'border-slate-800 hover:border-slate-700'
+                className={`text-xs bg-slate-950 border rounded-md px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all font-medium cursor-pointer ${
+                  filters.gender !== undefined ? 'border-brand-500/60 bg-brand-950/30 text-brand-300 ring-1 ring-brand-500/30' : 'border-slate-800 hover:border-slate-700'
                 }`}
               >
-                <option value="">All Genders (Both Codes)</option>
-                {filterOptions.genders.map((g) => (
-                  <option key={g.value} value={g.value}>
-                    {g.label}
-                  </option>
-                ))}
+                <option value="">All Genders (همه)</option>
+                <option value="0">Male • مرد (15.5M • 65%)</option>
+                <option value="1">Female • زن (8.3M • 35%)</option>
               </select>
             </div>
 
@@ -146,16 +177,28 @@ export const GlobalFilterBar: React.FC = () => {
             </div>
           </div>
 
-          {/* Reset All Filters Button */}
+          {/* Action Buttons: Export & Reset */}
           {activeFilterCount > 0 && (
-            <button
-              onClick={clearFilters}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-all shadow-sm"
-              title="Reset all active cross-filters"
-            >
-              <RotateCcw className="w-3 h-3 text-amber-400" />
-              <span>Reset All ({activeFilterCount})</span>
-            </button>
+            <div className="flex items-center space-x-2">
+              {onExportClick && (
+                <button
+                  onClick={onExportClick}
+                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-sm shadow-brand-500/20 transition-all cursor-pointer"
+                  title="Export records matching current active filter constraints"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Export Scope</span>
+                </button>
+              )}
+              <button
+                onClick={clearFilters}
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-all shadow-sm cursor-pointer"
+                title="Reset all active cross-filters"
+              >
+                <RotateCcw className="w-3 h-3 text-amber-400" />
+                <span>Reset All ({activeFilterCount})</span>
+              </button>
+            </div>
           )}
         </div>
 
@@ -164,9 +207,22 @@ export const GlobalFilterBar: React.FC = () => {
           <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-800/50">
             <span className="text-[11px] text-slate-400 font-medium mr-1">Active Filter Constraints:</span>
 
+            {filters.search_query && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-brand-950/80 border border-brand-500/50 text-brand-300 text-xs shadow-sm">
+                <span>🔍 Search: "{filters.search_query}"</span>
+                <button
+                  onClick={() => setSearchQuery(undefined)}
+                  className="hover:text-white p-0.5 rounded-full hover:bg-brand-800/50"
+                  title="Remove search query"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )}
+
             {filters.province && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-brand-950/80 border border-brand-500/40 text-brand-300 text-xs">
-                <span>📍 Province: {filters.province}</span>
+                <span>📍 Province: {getEnglishProvinceName(filters.province)} • {filters.province}</span>
                 <button
                   onClick={() => setProvince(undefined)}
                   className="hover:text-white p-0.5 rounded-full hover:bg-brand-800/50"
@@ -179,7 +235,7 @@ export const GlobalFilterBar: React.FC = () => {
 
             {filters.district && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-xs">
-                <span>🏘️ District: {filters.district}</span>
+                <span>🏘️ District: {getEnglishDistrictName(filters.district, filters.province)} • {getCleanNativeName(filters.district, filters.province)}</span>
                 <button
                   onClick={() => setDistrict(undefined)}
                   className="hover:text-white p-0.5 rounded-full hover:bg-emerald-800/50"
@@ -192,7 +248,7 @@ export const GlobalFilterBar: React.FC = () => {
 
             {filters.gender !== undefined && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-purple-950/80 border border-purple-500/40 text-purple-300 text-xs">
-                <span>⚧ Gender: {filters.gender === 0 ? 'Male / Code 0 (مرد)' : 'Female / Code 1 (زن)'}</span>
+                <span>⚧ Gender: {filters.gender === 0 ? 'Male (مرد)' : 'Female (زن)'}</span>
                 <button
                   onClick={() => setGender(undefined)}
                   className="hover:text-white p-0.5 rounded-full hover:bg-purple-800/50"

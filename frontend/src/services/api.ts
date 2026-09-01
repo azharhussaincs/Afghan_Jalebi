@@ -121,8 +121,20 @@ export const api = {
     return res.json();
   },
 
-  getExportUrl(format: 'csv' | 'json', params: QueryParams = {}): string {
-    const exportParams = { ...params, format };
+  getExportUrl(
+    format: 'csv' | 'json' | 'pdf' | 'xlsx' | 'excel',
+    params: QueryParams = {},
+    limit: number = 1000,
+    columns?: string[]
+  ): string {
+    const exportParams: any = { ...params, format, limit };
+    if (columns && columns.length > 0) {
+      exportParams.columns = columns.join(',');
+    }
     return `${API_BASE}/records/export${buildQueryString(exportParams)}`;
+  },
+
+  getExecutivePdfReportUrl(params: QueryParams = {}): string {
+    return `${API_BASE}/reports/executive-summary-pdf${buildQueryString(params)}`;
   }
 };

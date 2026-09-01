@@ -37,8 +37,8 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     districts: [],
     books: [],
     genders: [
-      { value: 0, label: 'Gender Code 0 (Observed)' },
-      { value: 1, label: 'Gender Code 1 (Observed)' }
+      { value: 0, label: 'Male (مرد)' },
+      { value: 1, label: 'Female (زن)' }
     ],
     year_min: 1300,
     year_max: 1405

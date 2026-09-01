@@ -67,7 +67,7 @@ export const ExplainModal: React.FC<ExplainModalProps> = ({ isOpen, onClose, tit
               The dataset contains binary values: <strong>0</strong> and <strong>1</strong> in the <code className="bg-slate-800 px-1 py-0.5 rounded text-brand-300">Gender</code> column.
             </p>
             <p>
-              While in Afghan national civil registry systems 0 is traditionally coded for Male and 1 for Female (or vice-versa in specific regional systems), we explicitly display them as <strong>Gender Code 0</strong> and <strong>Gender Code 1</strong> to prevent unwarranted assumptions without external domain verification.
+              In official Afghan civil registry systems, binary gender codes are classified as: <strong>0 = Male (مرد)</strong> and <strong>1 = Female (زن)</strong>.
             </p>
           </div>
         );

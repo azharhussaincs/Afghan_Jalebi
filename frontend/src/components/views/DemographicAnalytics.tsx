@@ -34,7 +34,7 @@ export const DemographicAnalytics: React.FC = () => {
   // Stacked Area Chart Option: Year x Gender
   const stackedOption = {
     tooltip: { trigger: 'axis', axisPointer: { type: 'cross', label: { backgroundColor: '#0f172a' } } },
-    legend: { data: ['Gender Code 0', 'Gender Code 1'], textStyle: { color: '#94a3b8', fontSize: 11 } },
+    legend: { data: ['Male (مرد)', 'Female (زن)'], textStyle: { color: '#94a3b8', fontSize: 11 } },
     grid: { left: '3%', right: '4%', bottom: '3%', top: '10%', containLabel: true },
     xAxis: {
       type: 'category',
@@ -45,7 +45,7 @@ export const DemographicAnalytics: React.FC = () => {
     yAxis: { type: 'value', splitLine: { lineStyle: { color: '#1e293b' } }, axisLabel: { color: '#94a3b8' } },
     series: [
       {
-        name: 'Gender Code 0',
+        name: 'Male (مرد)',
         type: 'line',
         stack: 'Total',
         smooth: true,
@@ -54,7 +54,7 @@ export const DemographicAnalytics: React.FC = () => {
         data: cohorts.map((c) => c.code_0)
       },
       {
-        name: 'Gender Code 1',
+        name: 'Female (زن)',
         type: 'line',
         stack: 'Total',
         smooth: true,
@@ -99,7 +99,7 @@ export const DemographicAnalytics: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-sm font-bold text-slate-100">Birth Cohort Registration Trajectory</h3>
-            <p className="text-xs text-slate-400">Stacked volume by recorded Solar Hijri birth year and gender code</p>
+            <p className="text-xs text-slate-400">Stacked volume by recorded Solar Hijri birth year and gender (Male / Female)</p>
           </div>
           <button
             onClick={() => setExplainTopic('gender_semantics')}
@@ -124,10 +124,10 @@ export const DemographicAnalytics: React.FC = () => {
               <tr>
                 <th className="py-2.5 px-4 font-semibold">Birth Year (SH)</th>
                 <th className="py-2.5 px-4 font-semibold">Approx. Gregorian (CE)</th>
-                <th className="py-2.5 px-4 font-semibold text-right">Gender Code 0</th>
-                <th className="py-2.5 px-4 font-semibold text-right">Gender Code 1</th>
+                <th className="py-2.5 px-4 font-semibold text-right text-sky-400">Male (مرد)</th>
+                <th className="py-2.5 px-4 font-semibold text-right text-pink-400">Female (زن)</th>
                 <th className="py-2.5 px-4 font-semibold text-right">Total Births</th>
-                <th className="py-2.5 px-4 font-semibold text-right">Code 0 Ratio</th>
+                <th className="py-2.5 px-4 font-semibold text-right">Male Ratio</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
