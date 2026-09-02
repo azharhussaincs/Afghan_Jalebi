@@ -36,7 +36,6 @@ export const Header: React.FC<HeaderProps> = ({ onExportClick, activeView, onSea
       case 'books': return 'Registry Volumes & Page Explorer';
       case 'relationships': return 'Family Tree & Lineage Intelligence Lab';
       case 'quality': return 'Data Quality & Integrity Center';
-      case 'dictionary': return 'Data Dictionary & Schema Specification';
       case 'reports': return 'Ingestion Audit & Technical Report';
       default: return 'Data Exploration Platform';
     }

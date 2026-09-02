@@ -22,11 +22,12 @@ if [ -f "$BASE_DIR/.venv/bin/activate" ]; then
 fi
 
 # Determine uvicorn command
-UVICORN_CMD="python3 -m uvicorn"
 if [ -x "$BASE_DIR/.venv/bin/uvicorn" ]; then
     UVICORN_CMD="$BASE_DIR/.venv/bin/uvicorn"
-elif command -v /home/albaloshi/.local/bin/uvicorn &> /dev/null; then
-    UVICORN_CMD="/home/albaloshi/.local/bin/uvicorn"
+elif command -v uvicorn &> /dev/null; then
+    UVICORN_CMD="uvicorn"
+else
+    UVICORN_CMD="python3 -m uvicorn"
 fi
 
 # 1. Start Backend

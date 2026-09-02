@@ -49,16 +49,16 @@ if [ -d "frontend" ]; then
     cd ..
 fi
 
-# 6. Verify Dataset File
-DATA_PATH="./data/two.txt"
-if [ ! -f "$DATA_PATH" ] && [ ! -f "/media/albaloshi/USB_SHARED/two.txt" ]; then
-    echo "[!] Warning: two.txt not found in ./data/two.txt."
-    echo "[*] Please place your raw UTF-16 LE two.txt in ./data/two.txt"
+# 6. Check for Database or Raw Dataset
+if [ -s "database/data.db" ]; then
+    echo "[+] Ready: Found existing database/data.db! Skipping re-ingestion."
+elif [ -f "./data/two.txt" ] || [ -f "./two.txt" ]; then
+    echo "[*] Running zero-loss data ingestion and analytics pre-computation from two.txt..."
+    python3 scripts/ingest_fast.py
+else
+    echo "[!] Warning: Neither database/data.db nor two.txt were found."
+    echo "[*] Please place data.db into ./database/ or raw two.txt into ./data/."
 fi
-
-# 7. Run High-Speed Ingestion & Indexing Pipeline
-echo "[*] Running zero-loss data ingestion and analytics pre-computation..."
-python3 scripts/ingest_fast.py
 
 echo "======================================================================"
 echo "  Setup Complete! Run ./start.sh to launch the platform."

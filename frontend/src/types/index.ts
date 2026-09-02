@@ -92,6 +92,20 @@ export interface BooksPagesData {
   }[];
 }
 
+export interface LedgerPageData {
+  book_name: string;
+  page_number: number;
+  total_records_in_book: number;
+  unique_pages_in_book: number;
+  min_page: number;
+  max_page: number;
+  province: string;
+  district: string;
+  avg_records_per_page: number;
+  available_pages: number[];
+  records: RecordItem[];
+}
+
 export interface CorrelationMatrixData {
   fields: string[];
   pearson: number[][];
@@ -163,6 +177,7 @@ export interface FamilyMember {
   is_full_sibling?: boolean;
   is_same_page?: boolean;
   is_exact_lineage?: boolean;
+  confidence?: string;
 }
 
 export interface FamilyTreeNode {
@@ -180,6 +195,7 @@ export interface FamilyTreeData {
   father_name: string;
   father_candidates: FamilyMember[];
   siblings: FamilyMember[];
+  spouses?: FamilyMember[];
   children: FamilyMember[];
   page_peers: FamilyMember[];
   tree_graph: FamilyTreeNode;

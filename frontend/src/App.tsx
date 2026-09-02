@@ -12,7 +12,6 @@ import { DemographicAnalytics } from './components/views/DemographicAnalytics';
 import { BookPageExplorer } from './components/views/BookPageExplorer';
 import { RelationshipLab } from './components/views/RelationshipLab';
 import { DataQualityCenter } from './components/views/DataQualityCenter';
-import { DataDictionary } from './components/views/DataDictionary';
 import { ReportGenerator } from './components/views/ReportGenerator';
 import { RecordItem } from './types';
 import { ExportModal } from './components/common/ExportModal';
@@ -41,13 +40,16 @@ export const App: React.FC = () => {
       case 'demographics':
         return <DemographicAnalytics />;
       case 'books':
-        return <BookPageExplorer />;
+        return (
+          <BookPageExplorer
+            onSelectRecord={(r) => setSelectedRecord(r)}
+            onViewFamilyTree={handleViewFamilyTree}
+          />
+        );
       case 'relationships':
         return <RelationshipLab initialRecordId={familyRecordId} />;
       case 'quality':
         return <DataQualityCenter />;
-      case 'dictionary':
-        return <DataDictionary />;
       case 'reports':
         return <ReportGenerator />;
       default:

@@ -9,7 +9,8 @@ import {
   QualityReportData,
   SmartInsight,
   FilterOptions,
-  IngestionReport
+  IngestionReport,
+  LedgerPageData
 } from '../types';
 
 const API_BASE = '/api';
@@ -81,6 +82,12 @@ export const api = {
 
   async getBooksPagesAnalytics(params: QueryParams = {}): Promise<BooksPagesData> {
     const res = await fetch(`${API_BASE}/analytics/books-pages${buildQueryString(params)}`);
+    return res.json();
+  },
+
+  async getLedgerPage(bookName: string, pageNumber: number = 1): Promise<LedgerPageData> {
+    const res = await fetch(`${API_BASE}/books/ledger-page?book_name=${encodeURIComponent(bookName)}&page_number=${pageNumber}`);
+    if (!res.ok) throw new Error('Failed to load ledger page');
     return res.json();
   },
 

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useFilters } from '../../context/FilterContext';
-import { OverviewKPIs, GeographicAnalyticsData, DemographicAnalyticsData } from '../../types';
+import { OverviewKPIs, GeographicAnalyticsData } from '../../types';
 import { ExplainModal } from '../common/ExplainModal';
 import { getEnglishProvinceName } from '../../utils/geoTranslation';
 
@@ -21,7 +21,6 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
   const { toQueryParams, refreshKey, filters, activeFilterCount, clearFilters } = useFilters();
   const [kpis, setKpis] = useState<OverviewKPIs | null>(null);
   const [geoData, setGeoData] = useState<GeographicAnalyticsData | null>(null);
-  const [demoData, setDemoData] = useState<DemographicAnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [explainTopic, setExplainTopic] = useState<'gender_semantics' | 'quality_score' | 'solar_hijri' | null>(null);
 
@@ -31,13 +30,11 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
 
     Promise.all([
       api.getOverviewKPIs(params),
-      api.getGeographicAnalytics(params),
-      api.getDemographicAnalytics(params)
+      api.getGeographicAnalytics(params)
     ])
-      .then(([kpiRes, geoRes, demoRes]) => {
+      .then(([kpiRes, geoRes]) => {
         setKpis(kpiRes);
         setGeoData(geoRes);
-        setDemoData(demoRes);
       })
       .catch((err) => console.error('Failed to load overview data', err))
       .finally(() => setLoading(false));
@@ -105,39 +102,6 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
     ]
   };
 
-  // Timeline Chart Option
-  const years = demoData?.dob_distribution || [];
-  const yearChartOption = {
-    tooltip: { trigger: 'axis' },
-    grid: { left: '3%', right: '4%', bottom: '3%', top: '3%', containLabel: true },
-    xAxis: {
-      type: 'category',
-      data: years.map((y) => y.year),
-      axisLabel: { color: '#94a3b8', fontSize: 10 }
-    },
-    yAxis: { type: 'value', splitLine: { lineStyle: { color: '#1e293b' } }, axisLabel: { color: '#94a3b8', fontSize: 10 } },
-    series: [
-      {
-        type: 'line',
-        smooth: true,
-        data: years.map((y) => y.count),
-        itemStyle: { color: '#38bdf8' },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              { offset: 0, color: 'rgba(56, 189, 248, 0.4)' },
-              { offset: 1, color: 'rgba(56, 189, 248, 0.0)' }
-            ]
-          }
-        }
-      }
-    ]
-  };
 
   return (
     <div className="p-6 space-y-6">
@@ -283,25 +247,6 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
         </div>
       </div>
 
-      {/* Timeline Cohort Line Chart */}
-      <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-sm font-bold text-slate-100">Solar Hijri Birth Year Distribution</h3>
-            <p className="text-xs text-slate-400">Temporal cohort frequency curve from official registry birth records</p>
-          </div>
-          <button
-            onClick={() => onNavigate('explorer')}
-            className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1 font-medium"
-          >
-            <span>Explore Records</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-        <div className="h-64">
-          <ReactECharts option={yearChartOption} style={{ height: '100%', width: '100%' }} />
-        </div>
-      </div>
 
       {/* Explanation Modal */}
       {explainTopic && (

@@ -35,9 +35,19 @@ call npm install --silent
 call npm run build
 cd ..
 
-REM 6. Run Ingestion
-echo [*] Running high-speed zero-loss ingestion pipeline...
-python scripts\ingest_fast.py
+REM 6. Check for Database or Raw Dataset
+if exist database\data.db (
+    echo [+] Ready: Found existing database\data.db! Skipping re-ingestion.
+) else if exist data\two.txt (
+    echo [*] Running high-speed zero-loss ingestion pipeline...
+    python scripts\ingest_fast.py
+) else if exist two.txt (
+    echo [*] Running high-speed zero-loss ingestion pipeline...
+    python scripts\ingest_fast.py
+) else (
+    echo [!] Warning: Neither database\data.db nor two.txt were found.
+    echo [*] Please place data.db into database\ or raw two.txt into data\.
+)
 
 echo ======================================================================
 echo   Setup Complete! Run start.bat to launch the application.

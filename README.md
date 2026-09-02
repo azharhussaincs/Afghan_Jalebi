@@ -1,240 +1,512 @@
 # 📊 Enterprise Civil Registry Data Analytics & Exploration Platform
 
-An enterprise-grade, high-throughput analytical dashboard engineered to ingest, index, and explore **24.4+ million civil registration records** (9.9 GB raw UTF-16 LE dataset) with **instant sub-second response times**, universal multi-column search, cross-filtering, statistical relationship intelligence, and streaming data export.
+An enterprise-grade, high-throughput analytical dashboard engineered to ingest, index, and explore **24.4+ million civil registration records** (9.9 GB raw UTF-16 LE dataset) with **instant sub-second response times**, universal multi-column search, verified family tree lineage reconstruction, cross-filtering, statistical relationship intelligence, and multi-format streaming export (PDF, Excel, CSV, JSON).
 
 ---
 
 ## 📑 Table of Contents
 
-1. [System Architecture](#-system-architecture)
-2. [Prerequisites & System Requirements](#-prerequisites--system-requirements)
-3. [Complete Step-by-Step Setup Guide](#-complete-step-by-step-setup-guide)
-   * [A. Linux / macOS Setup](#a-linux--macos-setup)
-   * [B. Windows Setup](#b-windows-setup)
-4. [One-Command Quick Start](#-one-command-quick-start)
-5. [Running Backend & Frontend Manually](#-running-backend--frontend-manually)
-   * [1. Backend Server (FastAPI)](#1-running-the-backend-manually)
-   * [2. Frontend Application (Vite + React)](#2-running-the-frontend-manually)
-6. [Live Application URLs](#-live-application-urls)
-7. [Dataset & Database Specifications](#-dataset--database-specifications)
-8. [Data Ingestion & Zero-Loss Verification](#-data-ingestion--zero-loss-verification)
-9. [Key Features & Platform Modules](#-key-features--platform-modules)
-10. [REST API Reference & Endpoints](#-rest-api-reference--endpoints)
-11. [Troubleshooting & Common Issues](#-troubleshooting--common-issues)
-12. [Transferring to Another Computer](#-transferring-to-another-computer)
+1. [📂 Repository Files & Folder Structure Tree](#-repository-files--folder-structure-tree)
+2. [⚙️ Path & Configuration Reference (Where to Change Paths)](#️-path--configuration-reference-where-to-change-paths)
+3. [💻 Prerequisites & System Requirements](#-prerequisites--system-requirements)
+4. [🚀 Complete Setup Guide by Operating System](#-complete-setup-guide-by-operating-system)
+   * [A. Linux Setup (Ubuntu / Debian / Fedora / CentOS)](#a-linux-setup-ubuntu--debian--fedora)
+   * [B. macOS Setup (Apple Silicon & Intel)](#b-macos-setup-apple-silicon--intel)
+   * [C. Windows 10 / 11 Setup (PowerShell / Command Prompt)](#c-windows-10--11-setup)
+5. [⚡ How to Run the Platform](#-how-to-run-the-platform)
+   * [Option 1: One-Command Automated Start (Recommended)](#option-1-one-command-automated-start-recommended)
+   * [Option 2: Manual Dual-Terminal Execution](#option-2-manual-dual-terminal-execution)
+6. [📱 Accessing from Other Devices on Local Network (Wi-Fi / LAN)](#-accessing-from-other-devices-on-local-network-wi-fi--lan)
+7. [📦 Transferring the Project to Another Computer or USB Drive](#-transferring-the-project-to-another-computer-or-usb-drive)
+8. [💾 Database vs Raw Dataset Scenarios](#-database-vs-raw-dataset-scenarios)
+9. [🏛 System Architecture](#-system-architecture)
+10. [📋 16 Core Columns Schema](#-16-core-columns-schema)
+11. [🌟 Key Platform Modules](#-key-platform-modules)
+12. [📡 REST API Reference](#-rest-api-reference)
+13. [🛠 Troubleshooting & FAQ](#-troubleshooting--faq)
 
 ---
 
-## 🏛 System Architecture
+## 📂 Repository Files & Folder Structure Tree
+
+Below is the complete architectural layout of the project:
 
 ```text
-┌─────────────────────────────────────────────────────────────────┐
-│                    React Frontend (Port 5173)                   │
-│   • Executive Overview & KPIs with Dynamic Smart Insights       │
-│   • Universal Search Hub (Dari / Persian Unicode + Exact Match) │
-│   • Enterprise Data Explorer (16 Columns, Sorting, Pagination)  │
-│   • Geographic Analytics (Provinces & District Distribution)    │
-│   • Demographic Analytics (Solar Hijri Birth Cohorts Timeline)  │
-│   • Book & Page Physical Structure Explorer                     │
-│   • Statistical Relationship Lab (Pearson, Spearman, Cramér's V)│
-│   • Data Quality Center & 16-Column Audit Matrix                │
-│   • Streaming Exporter (UTF-8 BOM CSV / JSON)                   │
-└────────────────────────────────┬────────────────────────────────┘
-                                 │ HTTP REST API
-┌────────────────────────────────▼────────────────────────────────┐
-│                   FastAPI Backend (Port 8001)                   │
-│   • Sub-10ms Parameterized Query Builder & B-Tree Index Router  │
-│   • Pure-Python Statistical Engine (Zero Heavy Dependencies)    │
-│   • Precomputed Analytics Cache Retrieval                       │
-│   • Unicode-Preserving Streaming Exporter                       │
-└────────────────────────────────┬────────────────────────────────┘
-                                 │ SQLite C Engine (WAL Mode)
-┌────────────────────────────────▼────────────────────────────────┐
-│               Indexed SQLite Database (`database/data.db`)      │
-│   • `records` Table (23.8M+ unique civil entries)               │
-│   • 9 Multi-Column B-Tree Indexes                               │
-│   • `analytics_cache` (Instant pre-aggregated stats)            │
-│   • `ingestion_meta` (Zero-loss audit trail & row counts)       │
-└─────────────────────────────────────────────────────────────────┘
+Dashboard/
+├── .env.example                     # Environment configuration template (paths, ports, hosts)
+├── .env                             # Active environment configuration (created during setup)
+├── requirements.txt                 # Python backend package dependencies
+├── setup.sh                         # Automated one-click setup script for Linux & macOS
+├── start.sh                         # Automated dual-server startup script for Linux & macOS
+├── stop.sh                          # Process shutdown utility for background instances
+├── setup.bat                        # Automated setup script for Windows
+├── start.bat                        # Automated dual-server launcher for Windows
+├── README.md                        # Complete project documentation & setup manual
+│
+├── data/                            # Raw dataset directory (Optional if using pre-built database)
+│   └── two.txt                      # Raw source dataset (9.9 GB, 24.4M lines, UTF-16 LE CSV)
+│
+├── database/                        # Database storage directory
+│   ├── data.db                      # Primary SQLite database (23.8M records, B-Tree indexed)
+│   ├── analytics.db                 # Cache database for precomputed aggregates & metrics
+│   └── test.db                      # Temporary test database for unit test fixtures
+│
+├── backend/                         # FastAPI Python REST API Backend
+│   ├── __init__.py
+│   ├── database.py                  # Database connection pool, PRAGMA optimizations, path resolver
+│   └── main.py                      # REST endpoints, search router, family lineage engine, export center
+│
+├── analytics/                       # Analytical & Statistical Processing Core
+│   ├── __init__.py
+│   └── engine.py                    # Pure-Python statistical engine (Pearson, Spearman, Cramér's V)
+│
+├── scripts/                         # Maintenance & Data Pipeline Scripts
+│   ├── ingest_fast.py               # High-speed bulk CSV ingestor with zero-loss audit tracking
+│   └── ingest_dataset.py            # Alternate batch streaming ingestion script
+│
+├── tests/                           # Quality Assurance & Pipeline Tests
+│   └── test_pipeline.py             # Ingestion & data integrity verification tests
+│
+├── docs/                            # Deep Architectural & Engineering Documentation
+│   ├── ARCHITECTURE.md              # System design, data flow, and performance benchmarks
+│   ├── DATA_DICTIONARY.md           # Field-by-field definitions, encoding, and valid values
+│   ├── DATA_PIPELINE.md             # Ingestion pipeline specifications & throughput analysis
+│   ├── DATA_QUALITY.md              # 16-column completeness & uniqueness audit matrix
+│   ├── PERFORMANCE.md               # SQLite indexing, memory usage, and caching strategies
+│   ├── SEARCH.md                    # Dari/Persian Unicode normalization & B-Tree search architecture
+│   └── SECURITY.md                  # Input sanitization, SQL injection prevention, read-only guarantees
+│
+└── frontend/                        # React + TypeScript + Vite Web Dashboard
+    ├── index.html                   # HTML entry point with Persian/Dari web font support
+    ├── package.json                 # Frontend dependencies (React, Lucide, ECharts, Tailwind)
+    ├── package-lock.json
+    ├── tsconfig.json                # TypeScript compiler configuration
+    ├── vite.config.ts               # Vite build tool config with backend API reverse proxy
+    ├── tailwind.config.js           # Tailwind CSS theme & custom styling rules
+    ├── postcss.config.js
+    └── src/
+        ├── main.tsx                 # React application mounting point
+        ├── App.tsx                  # Top-level shell, global route views, export & modal triggers
+        ├── index.css                # Global CSS styles, custom scrollbars, animations
+        │
+        ├── types/
+        │   └── index.ts             # TypeScript interfaces (RecordItem, FamilyTreeData, KPIs, etc.)
+        │
+        ├── services/
+        │   └── api.ts               # Axios / Fetch client communicating with backend endpoints
+        │
+        ├── context/
+        │   └── FilterContext.tsx    # Synchronized global filter state (Province, District, Book, Year, Gender)
+        │
+        ├── utils/
+        │   └── geoTranslation.ts    # Dual English & Dari/Persian province/district mapping dictionaries
+        │
+        └── components/
+            ├── common/              # Reusable UI widgets & Modals
+            │   ├── RecordDrawer.tsx # Centered Record Inspector Modal (two-column attributes card)
+            │   ├── ExportModal.tsx  # Universal Multi-Format Export Center (PDF, Excel, CSV, JSON)
+            │   └── ExplainModal.tsx # Statistical definition tooltip & documentation modals
+            │
+            ├── layout/              # Persistent UI scaffolding
+            │   ├── Header.tsx       # Top navigation, record search trigger, system status
+            │   ├── Sidebar.tsx      # Platform module navigation bar
+            │   └── GlobalFilterBar.tsx # Synchronized multi-page filter controls
+            │
+            └── views/               # Primary platform feature modules
+                ├── ExecutiveOverview.tsx     # High-level KPIs, province charts, year distribution
+                ├── AdvancedSearch.tsx        # Universal search hub (Name, ID, MD5, Book)
+                ├── DataExplorer.tsx          # 23.8M record data grid with sorting & page jump
+                ├── RelationshipLab.tsx       # Verified Family Tree & Generational Lineage Explorer
+                ├── GeographicAnalytics.tsx   # Province breakdown & interactive district treemap
+                ├── DemographicAnalytics.tsx  # Solar Hijri birth cohorts & demographic timelines
+                ├── BookPageExplorer.tsx      # Archival volume catalog & page utilization
+                ├── DataQualityCenter.tsx     # 16-column completeness & uniqueness audit matrix
+                └── ReportGenerator.tsx       # Automated executive analytical report builder
 ```
+
+---
+
+## ⚙️ Path & Configuration Reference (Where to Change Paths)
+
+All paths and network configurations are centralized in the `.env` file at the root of the project.
+
+### 1. `.env` Configuration File
+Create or modify `.env` in the root directory:
+
+```env
+# ==============================================================================
+# Enterprise Data Analytics & Exploration Platform - Configuration
+# ==============================================================================
+
+# 1. Path to Raw Dataset (Only required if re-ingesting two.txt)
+# Can be relative to project root or an absolute path:
+# Examples:
+#   Linux/macOS: DATA_FILE=./data/two.txt or DATA_FILE=/mnt/storage/two.txt
+#   Windows:     DATA_FILE=C:\data\two.txt or DATA_FILE=D:\Datasets\two.txt
+DATA_FILE=./data/two.txt
+
+# 2. Path to SQLite Database
+# Point this to where your data.db file is stored:
+# Examples:
+#   Linux/macOS: DATABASE_FILE=./database/data.db or DATABASE_FILE=/var/data/data.db
+#   Windows:     DATABASE_FILE=C:\Dashboard\database\data.db
+DATABASE_FILE=./database/data.db
+
+# 3. Server Network Bindings
+HOST=0.0.0.0
+BACKEND_PORT=8001
+FRONTEND_PORT=5173
+```
+
+### 2. Changing the Backend Port
+If port `8001` is already in use on your system:
+1. Change `BACKEND_PORT=8005` in your `.env` file.
+2. Update the proxy target in `frontend/vite.config.ts`:
+   ```ts
+   proxy: {
+     '/api': {
+       target: 'http://127.0.0.1:8005', // <-- Set matching port here
+       changeOrigin: true
+     }
+   }
+   ```
+3. Update `start.sh` or `start.bat` port arguments accordingly.
+
+### 3. Moving `data.db` to an External Drive or SSD
+If you want to place the 13 GB database on an external SSD or another drive:
+1. Move `database/data.db` to your target path (e.g., `/mnt/fast_ssd/data.db` or `D:\data.db`).
+2. Update `DATABASE_FILE` in `.env`:
+   ```env
+   DATABASE_FILE=/mnt/fast_ssd/data.db
+   ```
+3. Restart the backend. The system will immediately bind to the new location.
 
 ---
 
 ## 💻 Prerequisites & System Requirements
 
-Ensure the following tools are installed on your computer:
+Ensure the following tools are installed on your host system:
 
-| Dependency | Minimum Version | Recommended Version | Purpose |
+| Dependency | Minimum Version | Recommended | Notes |
 |---|---|---|---|
-| **Python** | 3.10+ | 3.11 or 3.12 | Backend API & Analytics Engine |
-| **Node.js** | v18.0.0+ | v20.x or v22.x LTS | Frontend Tooling & Vite Dev Server |
-| **npm** | v9.0.0+ | v10.x+ | Package Manager |
-| **RAM** | 8 GB | 16 GB | In-memory query caching & rendering |
-| **Free Disk Space** | 20 GB | 30 GB SSD | Dataset storage (`two.txt`) & SQLite database |
+| **Python** | 3.10+ | 3.11 or 3.12 | Required for FastAPI & analytical processing |
+| **Node.js** | v18.0.0+ | v20.x or v22.x LTS | Required for Vite & React frontend |
+| **npm** | v9.0.0+ | v10.x+ | Distributed with Node.js |
+| **RAM** | 8 GB | 16 GB | In-memory indexing & ECharts rendering |
+| **Disk Space** | 15 GB SSD | 30 GB SSD | 13 GB for `data.db` (+ 10 GB if raw `two.txt` kept) |
 
 ---
 
-## 🛠 Complete Step-by-Step Setup Guide
+## 🚀 Complete Setup Guide by Operating System
 
-### A. Linux / macOS Setup
+### A. Linux Setup (Ubuntu / Debian / Fedora)
 
-#### Step 1: Clone or Open the Project
+#### 1. Install System Dependencies
+```bash
+# Ubuntu / Debian
+sudo apt update
+sudo apt install -y python3 python3-pip python3-venv nodejs npm git
+
+# Fedora / RHEL
+sudo dnf install -y python3 python3-pip nodejs npm git
+```
+
+#### 2. Clone / Open the Project
 ```bash
 cd /path/to/Dashboard
 ```
 
-#### Step 2: Configure Environment Variables
-Copy the template configuration file `.env.example` to `.env`:
+#### 3. Configure `.env`
 ```bash
 cp .env.example .env
 ```
-*(By default, `.env` points to `./data/two.txt` for the dataset and `./database/data.db` for the database).*
+*(Optionally edit `.env` with `nano .env` if your database is in a custom path).*
 
-#### Step 3: Set Up Python Backend Virtual Environment
+#### 4. Create Python Virtual Environment & Install Dependencies
 ```bash
-# Create a virtual environment named .venv
 python3 -m venv .venv
-
-# Activate the virtual environment
 source .venv/bin/activate
-
-# Upgrade pip and install backend dependencies
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-#### Step 4: Install Frontend Dependencies
+#### 5. Install Frontend Dependencies & Build Assets
 ```bash
-# Navigate to the frontend directory
 cd frontend
-
-# Install npm packages
 npm install
-
-# Return to root directory
+npm run build
 cd ..
+```
+
+#### 6. Make Scripts Executable
+```bash
+chmod +x setup.sh start.sh stop.sh
 ```
 
 ---
 
-### B. Windows Setup
+### B. macOS Setup (Apple Silicon & Intel)
 
-#### Step 1: Open Command Prompt or PowerShell
-Open Command Prompt (`cmd.exe`) as Administrator and navigate to the project directory:
+#### 1. Install Dependencies via Homebrew
+```bash
+brew install python node
+```
+
+#### 2. Clone / Open the Project
+```bash
+cd /path/to/Dashboard
+```
+
+#### 3. Configure `.env`
+```bash
+cp .env.example .env
+```
+
+#### 4. Set Up Python Virtual Environment
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+#### 5. Install Frontend Packages
+```bash
+cd frontend
+npm install
+npm run build
+cd ..
+```
+
+#### 6. Make Scripts Executable
+```bash
+chmod +x setup.sh start.sh stop.sh
+```
+
+---
+
+### C. Windows 10 / 11 Setup
+
+#### 1. Install Required Software
+* Download & install **Python 3.11+** from [python.org](https://www.python.org/downloads/) (*Check the box "Add python.exe to PATH"*).
+* Download & install **Node.js LTS** from [nodejs.org](https://nodejs.org/).
+
+#### 2. Open Command Prompt or PowerShell
+Navigate to the project folder:
 ```cmd
 cd C:\path\to\Dashboard
 ```
 
-#### Step 2: Configure Environment Variables
+#### 3. Configure `.env`
 ```cmd
 copy .env.example .env
 ```
 
-#### Step 3: Set Up Python Backend Virtual Environment
+#### 4. Set Up Python Virtual Environment
 ```cmd
-# Create virtual environment
 python -m venv .venv
-
-# Activate virtual environment
 call .venv\Scripts\activate
-
-# Upgrade pip and install dependencies
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-#### Step 4: Install Frontend Dependencies
+#### 5. Install Frontend Packages
 ```cmd
 cd frontend
 npm install
+npm run build
 cd ..
 ```
 
 ---
 
-## ⚡ One-Command Quick Start
+## ⚡ How to Run the Platform
 
-Once setup is complete, you can start both the backend and frontend simultaneously using the included launcher scripts:
+### Option 1: One-Command Automated Start (Recommended)
 
-### On Linux / macOS:
+#### On Linux / macOS:
 ```bash
-chmod +x start.sh stop.sh
 ./start.sh
 ```
-*To stop both services gracefully, press `Ctrl+C` or run `./stop.sh`.*
+* Both the FastAPI backend and Vite frontend will start in parallel.
+* Logs are automatically streamed to `backend.log` and `frontend.log`.
+* To stop both services gracefully, press `Ctrl+C` in the terminal or run `./stop.sh`.
 
-### On Windows:
-Double-click **`start.bat`** in Windows Explorer, or run:
+#### On Windows:
+Double-click **`start.bat`** in Windows Explorer, or execute in Command Prompt:
 ```cmd
 start.bat
 ```
 
 ---
 
-## 🏃 Running Backend & Frontend Manually
+### Option 2: Manual Dual-Terminal Execution
 
-If you prefer to run each service in separate terminal windows:
+If you wish to run backend and frontend in separate dedicated terminal windows:
 
-### 1. Running the Backend Manually
-
-Open **Terminal 1**:
+#### Terminal 1 — Backend (FastAPI API Server):
 ```bash
-# 1. Activate virtual environment
-source .venv/bin/activate    # On Windows: .venv\Scripts\activate
-
-# 2. Start Uvicorn server on port 8001
+# Linux / macOS:
+source .venv/bin/activate
 uvicorn backend.main:app --host 0.0.0.0 --port 8001 --reload
+
+# Windows:
+call .venv\Scripts\activate
+python -m uvicorn backend.main:app --host 0.0.0.0 --port 8001 --reload
 ```
-*Backend API will be running at: `http://localhost:8001`*
+* **API URL:** `http://localhost:8001`
+* **Swagger Docs:** `http://localhost:8001/docs`
+* **Healthcheck:** `http://localhost:8001/api/health`
 
----
-
-### 2. Running the Frontend Manually
-
-Open **Terminal 2**:
+#### Terminal 2 — Frontend (Vite Development Server):
 ```bash
-# 1. Navigate to frontend directory
 cd frontend
-
-# 2. Start Vite development server on port 5173
 npm run dev
 ```
-*Frontend Dashboard will be running at: `http://localhost:5173`*
+* **Dashboard UI:** `http://localhost:5173`
 
 ---
 
-## 🌐 Live Application URLs
+## 📱 Accessing from Other Devices on Local Network (Wi-Fi / LAN)
 
-| Service | URL | Description |
-|---|---|---|
-| 🖥️ **Web Dashboard** | **[http://localhost:5173](http://localhost:5173)** | Complete React Analytics & Search UI |
-| 📖 **Interactive API Docs** | **[http://localhost:8001/docs](http://localhost:8001/docs)** | Swagger UI documentation with test console |
-| 🩺 **Backend Health API** | **[http://localhost:8001/api/health](http://localhost:8001/api/health)** | JSON healthcheck with total live record count |
+Both the FastAPI backend and Vite frontend bind to `0.0.0.0` by default, allowing you to access the dashboard from any **mobile phone, tablet, or another laptop** connected to the same Wi-Fi or office network.
+
+### Step 1: Find your Host Computer's Local IP Address
+* **On Linux:**
+  ```bash
+  ip -br a
+  # or: hostname -I
+  ```
+* **On Windows:**
+  ```cmd
+  ipconfig
+  ```
+  *(Look for the **IPv4 Address**, typically starting with `192.168.x.x` or `10.x.x.x`).*
+* **On macOS:**
+  ```bash
+  ipconfig getifaddr en0
+  ```
+
+### Step 2: Open from Any Other Device
+On your phone, tablet, or secondary laptop connected to the same Wi-Fi network:
+* Open any browser (Chrome, Safari, Edge) and navigate to:
+  ```text
+  http://<HOST_IP>:5173
+  ```
+  *(For example: `http://192.168.1.150:5173`)*
+
+### Step 3: Firewall Access (If page doesn't load)
+* **Linux (UFW):**
+  ```bash
+  sudo ufw allow 5173/tcp
+  sudo ufw allow 8001/tcp
+  ```
+* **Windows Defender Firewall:** When first running `start.bat`, click **"Allow Access"** on the Windows Firewall prompt for Python and Node.js.
 
 ---
 
-## 📁 Dataset & Database Specifications
+## 📦 Transferring the Project to Another Computer or USB Drive
 
-* **Source Data File:** `two.txt` (9.90 GB)
-* **Encoding:** UTF-16 Little Endian (`UTF-16 LE`) with Byte Order Mark (`\xff\xfe`)
-* **Format:** Comma-Separated Values (`CSV`) with CRLF line terminators (`\r\n`)
-* **Total Source Rows:** `24,399,446` (24,399,445 data rows + 1 header row)
-* **Database File:** `database/data.db` (13 GB SQLite with WAL mode enabled)
-* **Unique Records Stored:** `23,839,823` unique citizen identities
-* **Source Integrity:** The original `two.txt` raw file is accessed in strictly **READ-ONLY** mode and is never modified or altered.
+To share this project with a colleague or set it up on another workstation:
 
-### 16 Core Columns Schema:
+### 1. Files to Copy
+* The entire project directory including all source code (`backend/`, `frontend/`, `analytics/`, `scripts/`, `docs/`).
+* Configuration and launcher files (`.env.example`, `requirements.txt`, `setup.sh`, `start.sh`, `setup.bat`, `start.bat`).
+* **The database file:** `database/data.db` (13 GB).
 
-| # | Column Name | SQL Type | Description | Observed Example |
+### 2. Files to SKIP (Do NOT copy)
+To avoid multi-gigabyte transfers and binary OS incompatibilities, do NOT copy:
+* ❌ `node_modules/` or `frontend/node_modules/` (will be reinstalled cleanly via `npm install`)
+* ❌ `.venv/` (will be recreated cleanly on the target OS)
+* ❌ `dist/` or `__pycache__/`
+
+### 3. Setup on the New Computer (1-Click)
+Once files are copied to the new computer:
+
+* **On Linux / macOS:**
+  ```bash
+  cd Dashboard
+  chmod +x setup.sh start.sh stop.sh
+  ./setup.sh
+  ./start.sh
+  ```
+* **On Windows:**
+  Double-click **`setup.bat`**, then double-click **`start.bat`**.
+
+---
+
+## 💾 Database vs Raw Dataset Scenarios
+
+### Scenario 1: You Already Have `database/data.db` (Most Common)
+If `database/data.db` (13 GB) is already provided in the folder:
+* **No ingestion needed!**
+* Simply run `./start.sh` (or `start.bat`), and the platform will load instantly with all 23.8M records ready for sub-second querying.
+
+### Scenario 2: You Only Have the Raw `two.txt` Dataset File
+If you have the raw 9.9 GB file (`two.txt`) and need to generate a new database:
+1. Place `two.txt` inside `data/two.txt` (or set `DATA_FILE=/path/to/two.txt` in `.env`).
+2. Run the high-speed streaming ingestion pipeline:
+   ```bash
+   source .venv/bin/activate
+   python3 scripts/ingest_fast.py
+   ```
+3. The script will:
+   * Process all 24.4M lines in binary streaming chunks.
+   * Verify character encodings and strip corrupt bytes.
+   * Build 9 high-performance multi-column B-Tree indexes.
+   * Generate `ingestion_meta` zero-loss audit counts.
+
+---
+
+## 🏛 System Architecture
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                       React Frontend (Port 5173)                       │
+│  • Executive Overview (KPIs, Province Charts, Cohort Analysis)         │
+│  • Universal Search Hub (Dari / Persian Unicode + Exact / Prefix)      │
+│  • Enterprise Data Explorer (16 Columns, Sorting, Page Jump)           │
+│  • Relationship Lab (Verified Generational Family Tree Lineage)        │
+│  • Geographic & Demographic Visual Analytics (Treemaps, ECharts)       │
+│  • Data Quality Center (Completeness, Uniqueness, 16-Column Audit)     │
+│  • Multi-Format Export Modal (PDF with Persian Shaping, Excel, CSV)    │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ HTTP REST API (/api/*)
+┌───────────────────────────────────▼────────────────────────────────────┐
+│                      FastAPI Backend (Port 8001)                       │
+│  • Parameterized Query Engine with dynamic B-Tree Index Routing        │
+│  • Strict Genealogical Verification Algorithm (Lineage & Age Validation│
+│  • In-Memory Precomputed Analytics Retrieval (< 10ms response)         │
+│  • Arabic/Dari RTL Shaping & ReportLab PDF Exporter Engine             │
+│  • OpenPyXL Styled Excel Generator with Metadata Audit Sheet           │
+│  • Streaming UTF-8 BOM CSV Engine (Excel-Compatible mojibake fix)      │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ SQLite C Engine (WAL Mode, 64MB Cache)
+┌───────────────────────────────────▼────────────────────────────────────┐
+│                  Indexed SQLite Database (`database/data.db`)          │
+│  • `records` Table (23,839,823 unique civil entries)                   │
+│  • 9 Multi-Column B-Tree Indexes (idx_records_names, idx_geo, etc.)    │
+│  • `analytics_cache` (Instant pre-calculated metrics)                  │
+│  • `ingestion_meta` (Zero-loss row count verification ledger)          │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📋 16 Core Columns Schema
+
+Every citizen identity record contains 16 verified civil attributes:
+
+| # | Column Name | SQLite Type | Description | Example |
 |---|---|---|---|---|
 | 1 | `id` | `INTEGER PRIMARY KEY` | Unique registry entry ID | `1009` |
 | 2 | `integer_key` | `INTEGER` | System sequence key | `634067377` |
 | 3 | `hash_key` | `TEXT (32)` | MD5 identity fingerprint | `B3BDB5290D8773A703554E96DA34E64F` |
 | 4 | `name` | `TEXT (UTF-8)` | Citizen Personal Name (نام) | `ظریفه` |
-| 5 | `fname` | `TEXT (UTF-8)` | Patronymic / Father's Name (نام پدر) | `لالا شیرین` |
+| 5 | `fname` | `TEXT (UTF-8)` | Father's Name (نام پدر) | `لالا شیرین` |
 | 6 | `gname` | `TEXT (UTF-8)` | Grandfather's Name (نام پدرکلان) | `در محمد` |
 | 7 | `dob_year` | `INTEGER` | Birth Year (Solar Hijri هجری شمسی) | `1388` (~2009 CE) |
-| 8 | `gender` | `INTEGER` | Binary Demographic Code | `0` or `1` |
+| 8 | `gender` | `INTEGER` | Demographic Code (`0` = Male, `1` = Female) | `1` |
 | 9 | `province` | `TEXT (UTF-8)` | Province Name (ولایت) | `کابل` |
 | 10 | `district` | `TEXT (UTF-8)` | District Name (ولسوالی) | `موسهی` |
 | 11 | `province_code`| `TEXT (3)` | Standard Province Code | `KBL` |
@@ -246,115 +518,61 @@ npm run dev
 
 ---
 
-## 🔄 Data Ingestion & Zero-Loss Verification
+## 🌟 Key Platform Modules
 
-If you ever need to re-ingest `two.txt` into a new SQLite database:
-
-```bash
-# Run the high-throughput zero-loss ingestion pipeline
-python3 scripts/ingest_fast.py
-```
-
-### Ingestion Audit Report:
-* **Total Source Rows:** `24,399,446`
-* **Imported Database Rows:** `24,399,444`
-* **Corrupt Rows in Raw Source:** `2` (Line `7,226,904` and Line `11,695,572` in `two.txt`)
-* **Skipped Rows:** `0`
-* **Unexplained Difference:** `0` (Zero unexplained data loss)
-* **Ingestion Status:** **COMPLETE & VERIFIED**
+1. **Executive Overview:** High-level KPIs, province charts, and birth cohort distribution across 23.8M records.
+2. **Universal Search Hub:** Sub-second search across Persian/Dari names, national IDs, MD5 hash fingerprints, and volume names.
+3. **Enterprise Data Explorer:** Server-side paginated table with sorting, column customization, and centered **Record Inspector Modal**.
+4. **Verified Family Tree & Lineage Reconstruction (Relationship Lab):**
+   * Visualizes 4 verified generational tiers:
+     $$\text{Grandfather (پدرکلان)} \longrightarrow \text{Father (پدر)} \longrightarrow \text{Target Subject \& Siblings} \longrightarrow \text{Children (Sons \& Daughters)}$$
+   * **Strict Verification:** Eliminates arbitrary heuristics or fake spouses. Children require verified patrilineal lineage (`fname == target.name` AND `gname == target.fname`) and biological age gap validation ($\ge 15$ years).
+5. **Geographic Analytics:** Province distribution rankings, district treemaps, and regional gender breakdowns.
+6. **Book & Physical Page Explorer:** Archival volume rankings and physical ledger documentation metrics.
+7. **Statistical Relationship Lab:** Pearson ($r$), Spearman ($\rho$), and Cramér's V categorical association.
+8. **Data Quality Center:** 16-column completeness & uniqueness audit matrix.
+9. **Universal Multi-Format Export Center:** Export custom subsets up to 25,000 rows in **PDF** (with proper right-to-left Persian shaping), **Excel `.xlsx`** (styled with summary audit tab), **CSV** (with UTF-8 BOM preventing Excel encoding bugs), or **JSON**.
 
 ---
 
-## 🌟 Key Features & Platform Modules
-
-1. **Executive Overview:** Real-time KPI summary tiles, top provinces chart, birth cohort distribution, and auto-generated smart narrative insights.
-2. **Universal Search Hub:** Instant multi-column search supporting Dari/Persian Arabic characters (`ظریفه`, `انصار الله`), IDs, MD5 HashKeys, and physical volumes.
-3. **Enterprise Data Explorer:** Server-side paginated table with sorting, column visibility toggle, and instant Record Drawer deep inspector.
-4. **Geographic Analytics:** Province distribution bar chart, interactive district treemap, and Province $\times$ Gender breakdown matrix.
-5. **Demographic Analytics:** Solar Hijri birth year timeline ($1300 - 1405$), gender cohort distribution, and generation breakdown.
-6. **Book & Page Physical Explorer:** Volume density rankings and physical page utilization histogram.
-7. **Statistical Relationship Lab:** Pearson ($r$) and Spearman ($\rho$) correlation heatmaps, Cramér's V categorical association ($V$), with explicit scientific notices (*"Correlation does not imply causation"*).
-8. **Data Quality Center:** Composite quality gauge ($0-100\%$) across Completeness, Uniqueness, Validity, and Consistency, with a 16-column audit matrix.
-9. **Streaming Exporters:** Download full or filtered dataset subsets in **CSV (with UTF-8 BOM for Microsoft Excel Persian text rendering)** or formatted JSON.
-
----
-
-## 📡 REST API Reference & Endpoints
+## 📡 REST API Reference
 
 | Method | Endpoint | Query Parameters | Description |
 |---|---|---|---|
-| `GET` | `/api/health` | - | Health status & live record count |
-| `GET` | `/api/ingestion/report` | - | Ingestion row count audit & verification metrics |
-| `GET` | `/api/filters/options` | - | Dynamic filter dropdown options |
-| `GET` | `/api/analytics/kpis` | `province, district, gender, year_min, year_max` | Executive summary KPIs |
-| `GET` | `/api/analytics/geographic` | `gender, year_min, year_max` | Province & district distribution |
-| `GET` | `/api/analytics/demographics`| `province, district, gender` | Solar Hijri birth cohorts & gender proportions |
-| `GET` | `/api/analytics/books-pages` | `province, district` | Book volumes & page density histogram |
-| `GET` | `/api/analytics/relationships`| - | Pearson ($r$), Spearman ($\rho$), Cramér's V ($V$) |
-| `GET` | `/api/analytics/quality` | - | 16-column completeness & quality scores |
-| `GET` | `/api/analytics/insights` | - | Auto-generated smart analytical insights |
-| `GET` | `/api/records` | `page, page_size, sort_by, sort_order, q, ...` | Server-paginated records table |
-| `GET` | `/api/records/{id}` | - | Single record detail inspector (16 fields) |
-| `GET` | `/api/records/{id}/image`| - | Local image resolver for `CroppedPath` |
-| `GET` | `/api/records/export` | `format=csv\|json, ...filters` | Streaming export with UTF-8 BOM |
+| `GET` | `/api/health` | - | Health status, database connection, and total record count |
+| `GET` | `/api/filters/options` | - | Dynamic filter options for provinces, districts, books, and years |
+| `GET` | `/api/analytics/kpis` | `province, district, gender, year_min, year_max` | Live KPI calculations reflecting active filters |
+| `GET` | `/api/records` | `page, page_size, sort_by, sort_order, q, ...` | Server-paginated records table query |
+| `GET` | `/api/records/{id}` | - | Single citizen record inspector (16 verified fields) |
+| `GET` | `/api/records/{id}/family-tree` | - | Verified generational lineage reconstruction |
+| `GET` | `/api/records/export` | `format=csv\|json\|xlsx\|pdf, limit, columns, ...` | Universal multi-format streaming export |
+| `GET` | `/api/reports/executive-summary-pdf` | - | Executive C-level summary report in PDF format |
 
 ---
 
-## ❓ Troubleshooting & Common Issues
+## 🛠 Troubleshooting & FAQ
 
-### 1. Port 8001 or 5173 is already in use
-* **Symptom:** `error while attempting to bind on address: address already in use`.
-* **Fix (Linux/macOS):**
+### 1. Port `8001` or `5173` is already in use
+* **Linux / macOS:**
   ```bash
   fuser -k 8001/tcp
   fuser -k 5173/tcp
   ```
-* **Fix (Windows):**
+* **Windows:**
   ```cmd
   netstat -ano | findstr :8001
   taskkill /PID <PID> /F
   ```
 
-### 2. Dari / Persian Text mojibake in Microsoft Excel
-* **Fix:** When downloading CSV files from the dashboard or `/api/records/export?format=csv`, the platform automatically prepends the **UTF-8 Byte Order Mark (`\xef\xbb\xbf`)**, allowing Microsoft Excel to render Arabic, Dari, and Persian characters cleanly.
+### 2. Dari / Persian text looks corrupted in Microsoft Excel
+* **Fix:** When downloading CSV files from the dashboard or API, the platform automatically includes the **UTF-8 Byte Order Mark (`\xef\xbb\xbf`)**, which tells Excel to render Dari, Pashto, and Persian characters cleanly. Alternatively, export directly as **Excel (`.xlsx`)** from the Export Modal.
 
-### 3. Database is locked error
-* **Fix:** If a previous process terminated abruptly on an exFAT filesystem, remove any leftover `.db-journal` file:
+### 3. Database is locked (`database is locked`)
+* **Fix:** Occurs if an ungraceful shutdown occurred while a write transaction was open. Run:
   ```bash
   rm -f database/data.db-journal
   ```
 
-### 4. Running directly from an exFAT USB drive on Linux
-* When running Python directly on an exFAT USB mount under Linux, run `pip install -r requirements.txt` directly without `venv` (or create `.venv` on your local SSD), because the Linux exFAT driver does not support POSIX symlinks.
-
----
-
-## 🚚 Transferring to Another Computer
-
-To give this project to another developer or client:
-
-### 📦 Files to Transfer:
-1. All project source code (`backend/`, `frontend/`, `analytics/`, `scripts/`, `docs/`)
-2. Configuration files (`requirements.txt`, `package.json`, `.env.example`, `setup.sh`, `start.sh`, `setup.bat`, `start.bat`)
-3. The dataset database file (`database/data.db`) or raw file (`data/two.txt`).
-
-### ❌ Files NOT to Transfer:
-* `node_modules/` or `frontend/node_modules/` (will be reinstalled via `npm install`)
-* `.venv/` (will be recreated via `python -m venv .venv`)
-* `__pycache__/` or `.vite/` build caches
-
-### 🎯 Steps on the New Computer:
-```bash
-# 1. Enter project directory
-cd Dashboard
-
-# 2. Configure environment
-cp .env.example .env
-
-# 3. Run automated setup and start
-chmod +x setup.sh start.sh
-./setup.sh
-./start.sh
-```
-*Open **`http://localhost:5173`** in your browser!*
-# Afghan_Jalebi
+### 4. Running from an exFAT USB Drive on Linux
+* The Linux `exFAT` filesystem driver does not support POSIX symlinks needed by virtual environments.
+* **Fix:** Create `.venv` on your local SSD drive (`~/.venv_dashboard`) and point your execution to it, while keeping `data.db` on the USB drive configured in `.env`.

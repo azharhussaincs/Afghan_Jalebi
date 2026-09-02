@@ -7,7 +7,6 @@ import {
   BookOpen,
   GitFork,
   CheckCircle2,
-  BookMarked,
   FileText,
   Flame
 } from 'lucide-react';
@@ -26,7 +25,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) =
     { id: 'explorer', label: 'Data Explorer', icon: Table, category: 'Data Operations' },
     { id: 'search', label: 'Universal Search Hub', icon: Search, category: 'Data Operations' },
     { id: 'quality', label: 'Data Quality Center', icon: CheckCircle2, category: 'Quality & Docs' },
-    { id: 'dictionary', label: 'Data Dictionary', icon: BookMarked, category: 'Quality & Docs' },
     { id: 'reports', label: 'Audit & Ingestion', icon: FileText, category: 'Quality & Docs' }
   ];
 
