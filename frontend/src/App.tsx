@@ -13,6 +13,10 @@ import { BookPageExplorer } from './components/views/BookPageExplorer';
 import { RelationshipLab } from './components/views/RelationshipLab';
 import { DataQualityCenter } from './components/views/DataQualityCenter';
 import { ReportGenerator } from './components/views/ReportGenerator';
+import { FaceStudio } from './components/views/FaceStudio';
+import { TranslationStudio } from './components/views/TranslationStudio';
+import { RtpRegistryView } from './components/views/RtpRegistryView';
+import { IvpAuditView } from './components/views/IvpAuditView';
 import { RecordItem } from './types';
 import { ExportModal } from './components/common/ExportModal';
 
@@ -31,12 +35,20 @@ export const App: React.FC = () => {
     switch (activeView) {
       case 'overview':
         return <ExecutiveOverview onNavigate={(view) => setActiveView(view)} />;
+      case 'geographic':
+        return <GeographicAnalytics />;
+      case 'biometrics':
+        return <FaceStudio />;
+      case 'translation':
+        return <TranslationStudio />;
+      case 'rtp_relief':
+        return <RtpRegistryView />;
+      case 'ivp_security':
+        return <IvpAuditView />;
       case 'search':
         return <AdvancedSearch onSelectRecord={(r) => setSelectedRecord(r)} />;
       case 'explorer':
         return <DataExplorer onSelectRecord={(r) => setSelectedRecord(r)} />;
-      case 'geographic':
-        return <GeographicAnalytics />;
       case 'demographics':
         return <DemographicAnalytics />;
       case 'books':
@@ -59,11 +71,11 @@ export const App: React.FC = () => {
 
   return (
     <FilterProvider>
-      <div className="flex min-h-screen bg-slate-950 text-slate-100 antialiased font-sans">
-        {/* Persistent Sidebar */}
+      <div className="flex min-h-screen bg-[#05070d] text-slate-100 antialiased font-sans">
+        {/* Persistent Cyber-HUD Sidebar */}
         <Sidebar activeView={activeView} setActiveView={setActiveView} />
 
-        {/* Main Content Area */}
+        {/* Main Content Viewport */}
         <div className="flex-1 flex flex-col min-w-0">
           <Header
             activeView={activeView}
@@ -72,7 +84,7 @@ export const App: React.FC = () => {
           />
           <GlobalFilterBar onExportClick={() => setShowExportModal(true)} />
 
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto bg-ambient-grid">
             {renderActiveView()}
           </main>
         </div>

@@ -69,6 +69,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Reference Capabilities: Translation, Biometrics, RTP Relief, IVP Security & Statistical Radar
+from backend.routers.reference_endpoints import router as reference_router
+app.include_router(reference_router)
+
 # Models
 class Record(BaseModel):
     id: int

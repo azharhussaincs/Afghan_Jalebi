@@ -8,6 +8,33 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Space Canvas & Deep Dark HUD Palette
+        space: {
+          900: '#090e1a',
+          950: '#05070d',
+        },
+        // Cyber Accent Tokens from Reference Project
+        emerald: {
+          400: '#34d399',
+          500: '#10b981',
+          600: '#059669',
+        },
+        gold: {
+          400: '#fbbf24',
+          500: '#f59e0b',
+          600: '#d97706',
+        },
+        cyan: {
+          400: '#38bdf8',
+          500: '#06b6d4',
+          600: '#0891b2',
+        },
+        purple: {
+          400: '#c084fc',
+          500: '#a855f7',
+          600: '#9333ea',
+        },
+        // Target Production Brand Colors (Preserved 100%)
         brand: {
           50: '#f0f9ff',
           100: '#e0f2fe',
@@ -21,6 +48,7 @@ export default {
           900: '#082f49',
           950: '#041c2d',
         },
+        // Target Production Surface Colors (Preserved 100%)
         surface: {
           50: '#f8fafc',
           100: '#f1f5f9',
@@ -33,12 +61,26 @@ export default {
           800: '#1e293b',
           900: '#0f172a',
           950: '#020617',
+        },
+        // Glassmorphism Token Palette
+        glass: {
+          bg: 'rgba(18, 25, 42, 0.75)',
+          hover: 'rgba(26, 36, 60, 0.88)',
+          card: 'rgba(20, 29, 48, 0.72)',
+          border: 'rgba(255, 255, 255, 0.08)',
+          borderHover: 'rgba(255, 255, 255, 0.16)',
         }
+      },
+      boxShadow: {
+        glass: '0 12px 40px 0 rgba(0, 0, 0, 0.65)',
+        'glow-green': '0 0 35px rgba(16, 185, 129, 0.25)',
+        'glow-gold': '0 0 35px rgba(245, 158, 11, 0.3)',
+        'glow-cyan': '0 0 35px rgba(56, 189, 248, 0.25)',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Vazirmatn', 'Tahoma', 'sans-serif'],
         persian: ['Vazirmatn', 'Tahoma', 'Segoe UI', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+        mono: ['Fira Code', 'JetBrains Mono', 'monospace'],
       }
     },
   },

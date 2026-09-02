@@ -1,9 +1,14 @@
 import React from 'react';
 import {
   BarChart3,
-  Search,
-  Table,
   MapPin,
+  ScanFace,
+  Languages,
+  Users,
+  Table,
+  Search,
+  Package,
+  ShieldCheck,
   BookOpen,
   GitFork,
   CheckCircle2,
@@ -18,37 +23,49 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) => {
   const navItems = [
-    { id: 'overview', label: 'Executive Overview', icon: BarChart3, category: 'Analytics' },
-    { id: 'geographic', label: 'Geographic Insights', icon: MapPin, category: 'Analytics' },
-    { id: 'books', label: 'Books & Page Explorer', icon: BookOpen, category: 'Analytics' },
-    { id: 'relationships', label: 'Family Tree & Lineage', icon: GitFork, category: 'Analytics' },
-    { id: 'explorer', label: 'Data Explorer', icon: Table, category: 'Data Operations' },
-    { id: 'search', label: 'Universal Search Hub', icon: Search, category: 'Data Operations' },
-    { id: 'quality', label: 'Data Quality Center', icon: CheckCircle2, category: 'Quality & Docs' },
-    { id: 'reports', label: 'Audit & Ingestion', icon: FileText, category: 'Quality & Docs' }
+    // Category 1: National Intelligence & GIS
+    { id: 'overview', label: 'Executive Overview', icon: BarChart3, category: 'National Intelligence & GIS' },
+    { id: 'geographic', label: '34-Province GIS & Cartography', icon: MapPin, category: 'National Intelligence & GIS', badge: '34 Prov' },
+    { id: 'biometrics', label: 'Biometric Face Studio', icon: ScanFace, category: 'National Intelligence & GIS', badge: '128D' },
+    { id: 'translation', label: 'Dual-Stream Translator', icon: Languages, category: 'National Intelligence & GIS', badge: 'NLLB' },
+    { id: 'demographics', label: 'Demographic Cohorts', icon: Users, category: 'National Intelligence & GIS' },
+
+    // Category 2: Civil Archives & Special Registries
+    { id: 'explorer', label: 'Civil Data Explorer', icon: Table, category: 'Civil Archives & Special Registries' },
+    { id: 'search', label: 'Universal Search Hub', icon: Search, category: 'Civil Archives & Special Registries' },
+    { id: 'rtp_relief', label: 'RTP Relief Registry', icon: Package, category: 'Civil Archives & Special Registries', badge: '626K' },
+    { id: 'ivp_security', label: 'IVP Security & Audit', icon: ShieldCheck, category: 'Civil Archives & Special Registries', badge: '1.1K' },
+    { id: 'books', label: 'Books & Page Explorer', icon: BookOpen, category: 'Civil Archives & Special Registries' },
+    { id: 'relationships', label: 'Family Tree & Lineage', icon: GitFork, category: 'Civil Archives & Special Registries' },
+
+    // Category 3: Governance & Data Integrity
+    { id: 'quality', label: 'Data Quality Center', icon: CheckCircle2, category: 'Governance & Integrity' },
+    { id: 'reports', label: 'Audit & Ingestion', icon: FileText, category: 'Governance & Integrity' }
   ];
 
   const categories = Array.from(new Set(navItems.map(item => item.category)));
 
   return (
-    <aside className="w-64 border-r border-slate-800/80 bg-slate-950 flex flex-col justify-between shrink-0 h-screen sticky top-0 overflow-y-auto">
+    <aside className="w-64 border-r border-white/10 bg-[#090e1a]/95 backdrop-blur-2xl flex flex-col justify-between shrink-0 h-screen sticky top-0 overflow-y-auto">
       <div>
         {/* Brand Header */}
-        <div className="p-6 border-b border-slate-800/60 flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-brand-500/25">
+        <div className="p-5 border-b border-white/10 flex items-center space-x-3 bg-[#05070d]/60">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 border border-emerald-400/40 flex items-center justify-center shadow-lg shadow-emerald-500/25">
             <Flame className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="font-bold text-sm text-slate-100 tracking-wide">DATA EXPLORER</h2>
-            <p className="text-[11px] text-slate-400 font-mono">v1.0.0 • SQLite WAL</p>
+            <h2 className="font-extrabold text-sm text-white tracking-wider flex items-center gap-1.5">
+              KOCHI MANAGER
+            </h2>
+            <p className="text-[10px] text-emerald-400 font-mono tracking-tight">NSIA Matrix • SQLite WAL</p>
           </div>
         </div>
 
         {/* Navigation Categories */}
-        <div className="p-4 space-y-6">
+        <div className="p-3 space-y-5">
           {categories.map(category => (
             <div key={category} className="space-y-1">
-              <h3 className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+              <h3 className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">
                 {category}
               </h3>
               {navItems.filter(item => item.category === category).map(item => {
@@ -58,14 +75,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) =
                   <button
                     key={item.id}
                     onClick={() => setActiveView(item.id)}
-                    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                       isActive
-                        ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/80'
+                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/30 border border-emerald-400/30'
+                        : 'text-slate-400 hover:text-white hover:bg-white/[0.05] border border-transparent'
                     }`}
                   >
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                    <span>{item.label}</span>
+                    <div className="flex items-center space-x-2.5 min-w-0">
+                      <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
+                      <span className="truncate">{item.label}</span>
+                    </div>
+
+                    {item.badge && (
+                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                        isActive
+                          ? 'bg-black/30 text-emerald-200'
+                          : 'bg-white/5 text-slate-400 border border-white/5'
+                      }`}>
+                        {item.badge}
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -74,13 +103,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) =
         </div>
       </div>
 
-      {/* Footer Info */}
-      <div className="p-4 border-t border-slate-800/60 text-[11px] text-slate-400">
-        <div className="flex items-center justify-between mb-1">
-          <span className="font-mono text-[10px] text-emerald-400">● SYSTEM ONLINE</span>
-          <span className="text-[10px]">Zero Data Loss</span>
+      {/* Footer Info & Telemetry Status */}
+      <div className="p-4 border-t border-white/10 bg-[#05070d]/80 text-[11px] text-slate-400">
+        <div className="flex items-center justify-between mb-1.5">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-mono text-[10px] font-bold text-emerald-400">SYSTEM ONLINE</span>
+          </div>
+          <span className="text-[10px] font-mono text-slate-400">WAL Sync</span>
         </div>
-        <p className="text-[10px] text-slate-400">Original UTF-16 Source Verified</p>
+        <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+          <span>24,399,444 Rows</span>
+          <span>Zero Loss</span>
+        </div>
       </div>
     </aside>
   );

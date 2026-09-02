@@ -5,7 +5,6 @@ import {
   MapPin,
   BookOpen,
   Calendar,
-  CheckCircle2,
   TrendingUp,
   ArrowUpRight,
   ShieldAlert,
@@ -132,7 +131,7 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
       )}
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Total Records */}
         <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 transition-all">
           <div className="flex items-center justify-between">
@@ -179,28 +178,6 @@ export const ExecutiveOverview: React.FC<{ onNavigate: (view: string) => void }>
             </div>
             <p className="text-[11px] text-slate-400 mt-1">Official Archival Volumes</p>
           </div>
-        </div>
-
-        {/* Data Quality Score */}
-        <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">DATA QUALITY SCORE</span>
-            <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-baseline justify-between">
-            <div className="text-2xl font-black text-slate-100 font-mono tracking-tight">
-              {kpis.quality_score}%
-            </div>
-            <button
-              onClick={() => setExplainTopic('quality_score')}
-              className="text-[11px] text-brand-400 hover:underline"
-            >
-              Details &rarr;
-            </button>
-          </div>
-          <p className="text-[11px] text-slate-400 mt-1">Schema & Uniqueness Validated</p>
         </div>
       </div>
 

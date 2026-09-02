@@ -4,6 +4,48 @@ An enterprise-grade, high-throughput analytical dashboard engineered to ingest, 
 
 ---
 
+## ⚡ Enterprise Cyber-HUD Upgrade & Unified Reference Capabilities
+
+This platform has been upgraded with the **Reference Cyber-HUD Architecture**, seamlessly integrating advanced biometric vector matching, neural translation, emergency relief records, and operator credential audits alongside the core 24.4M civil archives:
+
+### 🌟 Unified Feature Matrix
+1. **Dual-Stream Translation Studio (`/api/translate`):**
+   - Side-by-side workbench for RTL native Afghan scripts (Dari `prs_Arab` / Pashto `pus_Arab`) and English `eng_Latn`.
+   - Instant lexical translation dictionary + lazy-loaded Meta NLLB-200 3.3B neural model fallback.
+   - One-click benchmark presets for Tazkira records, NSIA ledgers, and official verifications.
+2. **128D Biometric Face Studio with Vector Arrow HUD (`/api/biometrics/*`):**
+   - 128-dimensional Euclidean vector matching against biometric embeddings.
+   - **Interactive Vector Arrow HUD (`TargetScanHUD.tsx`):** 8 multi-directional vector arrows dynamically flying in to impact facial landmarks with concentric shockwave rings, 128D Delaunay facial triangulation mesh, and 1-to-N candidate rankings.
+3. **34-Province Geocartography GIS Matrix (`/api/analytics/provinces`):**
+   - High-resolution cartography map showcase (`afghanistan-map.png` & `kochi-leaks.png`) with province dossier cards and quick jump navigation.
+   - Live ECharts Treemaps and province-by-gender distribution analytics.
+4. **Humanitarian RTP Relief Registry (`/api/rtp/records`):**
+   - 626K emergency relief survey database across all 23 schema columns (PID, rations, bread loaves, vulnerability, nahya, gozar).
+5. **IVP Security & Operator Credential Audit (`/api/ivp/audit`):**
+   - 1,112 portal operator accounts across 48 regional offices with PBKDF2 hash inspection and role privilege controls.
+6. **Cross-Domain Statistical Radar (`/api/stats/radar`):**
+   - Multi-domain analytical telemetry unifying NSIA civil registries, RTP beneficiaries, and IVP operator accounts.
+
+---
+
+### 🚀 Quickstart & Verification Commands
+
+```bash
+# 1. Automated Dependency Setup
+./setup.sh
+
+# 2. Execute 13-Point Automated Verification Suite (100% Pass)
+python3 tests/verify_upgrade.py
+
+# 3. Launch Platform (FastAPI on :8001 + Vite on :5173)
+./start.sh
+
+# 4. Clean Process Termination
+./stop.sh
+```
+
+---
+
 ## 📑 Table of Contents
 
 1. [📂 Repository Files & Folder Structure Tree](#-repository-files--folder-structure-tree)

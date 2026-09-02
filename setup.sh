@@ -29,18 +29,25 @@ if ! command -v npm &> /dev/null; then
 fi
 echo "[+] npm version: $(npm --version)"
 
-# 3. Environment configuration
+# 3. Virtual Environment Setup
+if [ ! -d ".venv" ]; then
+    echo "[*] Creating Python virtual environment in .venv..."
+    python3 -m venv .venv
+fi
+source .venv/bin/activate
+
+# 4. Environment configuration
 if [ ! -f .env ]; then
     echo "[*] Creating .env from .env.example..."
     cp .env.example .env
 fi
 
-# 4. Install Python Dependencies
-echo "[*] Installing Python backend packages..."
+# 5. Install Python Dependencies from requirements.txt
+echo "[*] Installing Python backend packages from requirements.txt..."
 python3 -m pip install --quiet --upgrade pip
-python3 -m pip install --quiet fastapi uvicorn pydantic numpy scipy aiosqlite pandas
+python3 -m pip install --quiet -r requirements.txt
 
-# 5. Install Frontend Dependencies & Build
+# 6. Install Frontend Dependencies & Build
 echo "[*] Installing Frontend packages & building assets..."
 if [ -d "frontend" ]; then
     cd frontend
@@ -49,7 +56,7 @@ if [ -d "frontend" ]; then
     cd ..
 fi
 
-# 6. Check for Database or Raw Dataset
+# 7. Check for Database or Raw Dataset
 if [ -s "database/data.db" ]; then
     echo "[+] Ready: Found existing database/data.db! Skipping re-ingestion."
 elif [ -f "./data/two.txt" ] || [ -f "./two.txt" ]; then
@@ -59,6 +66,9 @@ else
     echo "[!] Warning: Neither database/data.db nor two.txt were found."
     echo "[*] Please place data.db into ./database/ or raw two.txt into ./data/."
 fi
+
+# 8. Ensure scripts are executable
+chmod +x *.sh tests/*.py 2>/dev/null || true
 
 echo "======================================================================"
 echo "  Setup Complete! Run ./start.sh to launch the platform."

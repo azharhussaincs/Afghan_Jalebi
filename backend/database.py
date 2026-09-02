@@ -146,6 +146,85 @@ def init_db(conn: sqlite3.Connection = None):
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_records_prov_code ON records (province_code);")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_records_dist_code ON records (district_code);")
 
+    # Reference Extension: Humanitarian RTP Relief Registry (626K survey schema)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS rtp_records (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        file_id TEXT,
+        pid INTEGER,
+        serial TEXT,
+        number TEXT,
+        name TEXT,
+        fname TEXT,
+        gfname TEXT,
+        tazkira TEXT,
+        job TEXT,
+        family_count INTEGER DEFAULT 5,
+        nahya TEXT,
+        gozar TEXT,
+        bread_count INTEGER DEFAULT 10,
+        worker INTEGER DEFAULT 1,
+        income TEXT DEFAULT '0',
+        status TEXT DEFAULT 'Active',
+        phone TEXT,
+        phone_copy TEXT,
+        shop TEXT,
+        province_id TEXT DEFAULT 'کابل',
+        datasource_id TEXT,
+        description TEXT
+    );
+    """)
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_rtp_name ON rtp_records (name);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_rtp_phone ON rtp_records (phone);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_rtp_job ON rtp_records (job);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_rtp_prov ON rtp_records (province_id);")
+
+    # Reference Extension: IVP Identity Verification Security & Credentials (1,112 accounts)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS ivp_auth (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        normalized_username TEXT,
+        email TEXT,
+        normalized_email TEXT,
+        email_confirmed INTEGER DEFAULT 1,
+        password_hash TEXT,
+        security_stamp TEXT,
+        concurrency_stamp TEXT,
+        phone_number TEXT,
+        phone_number_confirmed INTEGER DEFAULT 1,
+        two_factor_enabled INTEGER DEFAULT 0,
+        lockout_end TEXT,
+        lockout_enabled INTEGER DEFAULT 1,
+        access_failed_count INTEGER DEFAULT 0,
+        first_name TEXT,
+        last_name TEXT,
+        office_id INTEGER DEFAULT 1,
+        disabled INTEGER DEFAULT 0,
+        is_admin INTEGER DEFAULT 0,
+        request_source_id TEXT,
+        created_on TEXT,
+        created_by TEXT,
+        modified_on TEXT,
+        modified_by TEXT
+    );
+    """)
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_ivp_username ON ivp_auth (username);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_ivp_office ON ivp_auth (office_id);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_ivp_role ON ivp_auth (is_admin, disabled);")
+
+    # Reference Extension: 128D Biometric Face Vectors
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS face_vectors (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        record_id INTEGER,
+        path TEXT,
+        vector TEXT,
+        landmark TEXT
+    );
+    """)
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_face_record ON face_vectors (record_id);")
+
     conn.commit()
     if close_after:
         conn.close()
