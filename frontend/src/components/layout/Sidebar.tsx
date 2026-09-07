@@ -2,17 +2,11 @@ import React from 'react';
 import {
   BarChart3,
   MapPin,
-  ScanFace,
   Languages,
-  Users,
   Table,
   Search,
-  Package,
-  ShieldCheck,
   BookOpen,
   GitFork,
-  CheckCircle2,
-  FileText,
   Flame
 } from 'lucide-react';
 
@@ -26,21 +20,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) =
     // Category 1: National Intelligence & GIS
     { id: 'overview', label: 'Executive Overview', icon: BarChart3, category: 'National Intelligence & GIS' },
     { id: 'geographic', label: '34-Province GIS & Cartography', icon: MapPin, category: 'National Intelligence & GIS', badge: '34 Prov' },
-    { id: 'biometrics', label: 'Biometric Face Studio', icon: ScanFace, category: 'National Intelligence & GIS', badge: '128D' },
     { id: 'translation', label: 'Dual-Stream Translator', icon: Languages, category: 'National Intelligence & GIS', badge: 'NLLB' },
-    { id: 'demographics', label: 'Demographic Cohorts', icon: Users, category: 'National Intelligence & GIS' },
 
     // Category 2: Civil Archives & Special Registries
     { id: 'explorer', label: 'Civil Data Explorer', icon: Table, category: 'Civil Archives & Special Registries' },
     { id: 'search', label: 'Universal Search Hub', icon: Search, category: 'Civil Archives & Special Registries' },
-    { id: 'rtp_relief', label: 'RTP Relief Registry', icon: Package, category: 'Civil Archives & Special Registries', badge: '626K' },
-    { id: 'ivp_security', label: 'IVP Security & Audit', icon: ShieldCheck, category: 'Civil Archives & Special Registries', badge: '1.1K' },
     { id: 'books', label: 'Books & Page Explorer', icon: BookOpen, category: 'Civil Archives & Special Registries' },
-    { id: 'relationships', label: 'Family Tree & Lineage', icon: GitFork, category: 'Civil Archives & Special Registries' },
-
-    // Category 3: Governance & Data Integrity
-    { id: 'quality', label: 'Data Quality Center', icon: CheckCircle2, category: 'Governance & Integrity' },
-    { id: 'reports', label: 'Audit & Ingestion', icon: FileText, category: 'Governance & Integrity' }
+    { id: 'relationships', label: 'Family Tree & Lineage', icon: GitFork, category: 'Civil Archives & Special Registries' }
   ];
 
   const categories = Array.from(new Set(navItems.map(item => item.category)));

@@ -20,6 +20,7 @@ import {
 import { api } from '../../services/api';
 import { useFilters } from '../../context/FilterContext';
 import { GeographicAnalyticsData } from '../../types';
+import { DynamicAfghanistanMap } from '../gis/DynamicAfghanistanMap';
 import {
   formatDistrictDisplay,
   getEnglishProvinceName,
@@ -401,14 +402,13 @@ export const GeographicAnalytics: React.FC = () => {
               </div>
             </div>
 
-            {/* High-Resolution National Cartography Viewport */}
-            <div className="relative w-full max-h-96 rounded-xl overflow-hidden bg-black/60 border border-white/10 flex items-center justify-center p-2">
-              <img
-                src="/afghanistan-map.png"
-                alt="Afghanistan National Cartography Map"
-                className="max-h-88 w-auto object-contain rounded-lg filter contrast-105"
-              />
-            </div>
+            {/* Dynamic Interactive National Cartography Viewport */}
+            <DynamicAfghanistanMap
+              provincesCountData={data?.provinces}
+              totalRecords={totalRegistryRecords}
+              selectedProvinceId={selectedProvinceDossier?.id}
+              onSelectProvince={(prov) => setSelectedProvinceDossier(prov)}
+            />
 
             {/* Quick Province Jump Pills */}
             <div className="flex items-center gap-1.5 flex-wrap pt-1 text-xs">

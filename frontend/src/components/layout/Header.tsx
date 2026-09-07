@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Database, RefreshCw, Download, X, ArrowRight, ExternalLink } from 'lucide-react';
+import { Search, Database, RefreshCw, Download, X, ArrowRight } from 'lucide-react';
 import { useFilters } from '../../context/FilterContext';
 
 interface HeaderProps {
@@ -30,29 +30,15 @@ export const Header: React.FC<HeaderProps> = ({ onExportClick, activeView, onSea
     switch (activeView) {
       case 'overview': return 'Executive Overview';
       case 'gis_cartography': return '34-Province Geocartography GIS Matrix';
-      case 'biometrics': return '128D Biometric Facial Recognition Studio';
       case 'translation': return 'Parallel Dual-Stream Neural Translator';
-      case 'rtp_relief': return 'Humanitarian RTP Relief Registry (626K)';
-      case 'ivp_security': return 'IVP Operator Security & Credentials Audit';
       case 'search': return 'Universal Search & Filter Hub';
       case 'explorer': return 'Civil Archives Data Explorer';
       case 'geographic': return 'Geographic & Regional Analytics';
-      case 'demographics': return 'Demographic & Cohort Intelligence';
       case 'books': return 'Registry Volumes & Page Explorer';
       case 'relationships': return 'Family Tree & Lineage Intelligence Lab';
-      case 'quality': return 'Data Quality & Integrity Center';
-      case 'reports': return 'Ingestion Audit & Technical Report';
       default: return 'Civil Registry & GIS Intelligence Platform';
     }
   };
-
-  const externalPortals = [
-    { href: 'https://nsia.gov.af', label: 'nsia.gov.af', desc: 'NSIA Central', icon: '🏛️' },
-    { href: 'https://nid.nsia.gov.af', label: 'nid.nsia.gov.af', desc: 'e-Tazkira NID', icon: '🪪' },
-    { href: 'https://ivp.nsia.gov.af', label: 'ivp.nsia.gov.af', desc: 'Identity Verification', icon: '🔍' },
-    { href: 'https://asankhedmat.gov.af', label: 'asankhedmat.gov.af', desc: 'Civil Services', icon: '🏢' },
-    { href: 'https://passport.moi.gov.af', label: 'passport.moi.gov.af', desc: 'MoFA Passport', icon: '🛂' },
-  ];
 
   return (
     <header className="sticky top-0 z-30 flex flex-col border-b border-white/10 bg-[#05070d]/90 backdrop-blur-2xl transition-all">
@@ -145,36 +131,6 @@ export const Header: React.FC<HeaderProps> = ({ onExportClick, activeView, onSea
           </button>
 
         </div>
-      </div>
-
-      {/* Bottom Tier: Official Verified Database Portals Reference Bar */}
-      <div className="h-9 px-6 bg-[#090e1a]/95 border-t border-white/5 flex items-center justify-between text-xs overflow-x-auto scrollbar-none gap-4">
-        
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-sm">🔗</span>
-          <span className="font-bold text-white text-[11px]">Official Portals:</span>
-          <span className="font-mono text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
-            Verified References
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          {externalPortals.map((portal) => (
-            <a
-              key={portal.href}
-              href={portal.href}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 bg-white/[0.03] hover:bg-emerald-500/15 border border-white/5 hover:border-emerald-500/30 text-slate-300 hover:text-white px-2.5 py-1 rounded text-[11px] font-medium transition-all group"
-            >
-              <span>{portal.icon}</span>
-              <span className="font-mono text-[10px] text-emerald-300 group-hover:underline">{portal.label}</span>
-              <span className="text-slate-400 text-[10px]">({portal.desc})</span>
-              <ExternalLink className="w-2.5 h-2.5 opacity-60 group-hover:opacity-100" />
-            </a>
-          ))}
-        </div>
-
       </div>
 
     </header>

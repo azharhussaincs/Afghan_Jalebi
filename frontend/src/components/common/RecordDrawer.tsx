@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Copy, Check, ExternalLink, User, BookOpen, MapPin, Hash, Calendar, FileText, GitFork } from 'lucide-react';
+import { X, Copy, Check, User, BookOpen, MapPin, Calendar, FileText, GitFork } from 'lucide-react';
 import { RecordItem } from '../../types';
 
 interface RecordDrawerProps {
@@ -40,11 +40,7 @@ export const RecordDrawer: React.FC<RecordDrawerProps> = ({ record, onClose, onV
     { key: 'record_number', label: 'Record Number (شماره ثبت)', val: record.record_number, icon: FileText, colSpan: false },
     { key: 'province_code', label: 'Province Code', val: record.province_code, icon: MapPin, mono: true, colSpan: false },
     { key: 'district_code', label: 'District Code', val: record.district_code, icon: MapPin, mono: true, colSpan: false },
-    { key: 'book_name', label: 'Registry Book (جلد)', val: record.book_name, icon: BookOpen, rtl: true, colSpan: true },
-    { key: 'id', label: 'ID (Primary Key)', val: record.id, icon: Hash, mono: true, colSpan: false },
-    { key: 'integer_key', label: 'Integer Key', val: record.integer_key, icon: Hash, mono: true, colSpan: false },
-    { key: 'hash_key', label: 'Hash Key (MD5 Fingerprint)', val: record.hash_key, icon: Hash, mono: true, colSpan: true },
-    { key: 'cropped_path', label: 'Cropped Image Path', val: record.cropped_path, icon: ExternalLink, mono: true, colSpan: true }
+    { key: 'book_name', label: 'Registry Book (جلد)', val: record.book_name, icon: BookOpen, rtl: true, colSpan: true }
   ];
 
   return (

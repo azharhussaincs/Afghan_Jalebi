@@ -160,10 +160,7 @@ Dashboard/
                 ├── DataExplorer.tsx          # 23.8M record data grid with sorting & page jump
                 ├── RelationshipLab.tsx       # Verified Family Tree & Generational Lineage Explorer
                 ├── GeographicAnalytics.tsx   # Province breakdown & interactive district treemap
-                ├── DemographicAnalytics.tsx  # Solar Hijri birth cohorts & demographic timelines
-                ├── BookPageExplorer.tsx      # Archival volume catalog & page utilization
-                ├── DataQualityCenter.tsx     # 16-column completeness & uniqueness audit matrix
-                └── ReportGenerator.tsx       # Automated executive analytical report builder
+                └── BookPageExplorer.tsx      # Archival volume catalog & page utilization
 ```
 
 ---

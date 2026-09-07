@@ -8,15 +8,9 @@ import { ExecutiveOverview } from './components/views/ExecutiveOverview';
 import { AdvancedSearch } from './components/views/AdvancedSearch';
 import { DataExplorer } from './components/views/DataExplorer';
 import { GeographicAnalytics } from './components/views/GeographicAnalytics';
-import { DemographicAnalytics } from './components/views/DemographicAnalytics';
 import { BookPageExplorer } from './components/views/BookPageExplorer';
 import { RelationshipLab } from './components/views/RelationshipLab';
-import { DataQualityCenter } from './components/views/DataQualityCenter';
-import { ReportGenerator } from './components/views/ReportGenerator';
-import { FaceStudio } from './components/views/FaceStudio';
 import { TranslationStudio } from './components/views/TranslationStudio';
-import { RtpRegistryView } from './components/views/RtpRegistryView';
-import { IvpAuditView } from './components/views/IvpAuditView';
 import { RecordItem } from './types';
 import { ExportModal } from './components/common/ExportModal';
 
@@ -37,20 +31,12 @@ export const App: React.FC = () => {
         return <ExecutiveOverview onNavigate={(view) => setActiveView(view)} />;
       case 'geographic':
         return <GeographicAnalytics />;
-      case 'biometrics':
-        return <FaceStudio />;
       case 'translation':
         return <TranslationStudio />;
-      case 'rtp_relief':
-        return <RtpRegistryView />;
-      case 'ivp_security':
-        return <IvpAuditView />;
       case 'search':
         return <AdvancedSearch onSelectRecord={(r) => setSelectedRecord(r)} />;
       case 'explorer':
         return <DataExplorer onSelectRecord={(r) => setSelectedRecord(r)} />;
-      case 'demographics':
-        return <DemographicAnalytics />;
       case 'books':
         return (
           <BookPageExplorer
@@ -60,10 +46,6 @@ export const App: React.FC = () => {
         );
       case 'relationships':
         return <RelationshipLab initialRecordId={familyRecordId} />;
-      case 'quality':
-        return <DataQualityCenter />;
-      case 'reports':
-        return <ReportGenerator />;
       default:
         return <ExecutiveOverview onNavigate={(view) => setActiveView(view)} />;
     }
