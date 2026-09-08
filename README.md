@@ -615,3 +615,4 @@ Every citizen identity record contains 16 verified civil attributes:
 ### 4. Running from an exFAT USB Drive on Linux
 * The Linux `exFAT` filesystem driver does not support POSIX symlinks needed by virtual environments.
 * **Fix:** Create `.venv` on your local SSD drive (`~/.venv_dashboard`) and point your execution to it, while keeping `data.db` on the USB drive configured in `.env`.
+# Data_Dashboard
